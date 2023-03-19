@@ -55,12 +55,12 @@ func searchFiles(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	var result []string
-	for i, fi := range files {
+	for _, fi := range files {
 		if !fi.IsDir() {
-			result[i] = fi.Name()
+			result = append(result, fi.Name())
 		}
 	}
-	println(len(result))
+
 	if len(result) == 0 {
 		writer.WriteHeader(404)
 		return
