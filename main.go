@@ -2,10 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/go-chi/chi"
@@ -48,6 +51,7 @@ func serveFile(writer http.ResponseWriter, request *http.Request) {
 
 func searchFiles(writer http.ResponseWriter, request *http.Request) {
 	path := getFilePath(chi.URLParam(request, "number"))
+	fmt.Println(path)
 	files, err := os.ReadDir(path)
 	if err != nil {
 		log.Printf("Der Pfad %v konnte nicht gelesen werden.\n%v", path, err)
@@ -55,8 +59,9 @@ func searchFiles(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	var result []string
+
 	for _, fi := range files {
-		if !fi.IsDir() {
+		if isAllowedFile(fi) {
 			result = append(result, fi.Name())
 		}
 	}
@@ -71,8 +76,22 @@ func searchFiles(writer http.ResponseWriter, request *http.Request) {
 
 func getFilePath(number string) string {
 	path := filepath.Join(os.Getenv("ROOT_PATH"))
-	for _, v := range strings.Split(number, "") {
+	for _, v := range regexp.MustCompile("(^.|..)").FindAllString(number, -1) {
 		path = filepath.Join(path, v)
 	}
 	return path
+}
+
+func isAllowedFile(file fs.DirEntry) bool {
+	if file.IsDir() {
+		return false
+	}
+
+	extension := filepath.Ext(file.Name())
+	for _, v := range strings.Split(os.Getenv("ALLOWED_FILES"), ",") {
+		if "."+v == extension {
+			return true
+		}
+	}
+	return false
 }
