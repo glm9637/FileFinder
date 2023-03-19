@@ -30,7 +30,7 @@ function searchArticle() {
         currentArticle = searchInput.value;
         const response = yield fetch(`/api/search/${currentArticle}`);
         if (!response.ok) {
-            // TODO Handle Error
+            resultContainer.innerText = "Es wurde keine Dateien gefunden";
             return Promise.reject(response.statusText);
         }
         let files = (yield response.json());

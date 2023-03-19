@@ -51,11 +51,19 @@ func searchFiles(writer http.ResponseWriter, request *http.Request) {
 	files, err := os.ReadDir(path)
 	if err != nil {
 		log.Printf("Der Pfad %v konnte nicht gelesen werden.\n%v", path, err)
-		writer.Write([]byte("[]"))
+		writer.WriteHeader(404)
+		return
 	}
-	result := make([]string, len(files))
+	var result []string
 	for i, fi := range files {
-		result[i] = fi.Name()
+		if !fi.IsDir() {
+			result[i] = fi.Name()
+		}
+	}
+	println(len(result))
+	if len(result) == 0 {
+		writer.WriteHeader(404)
+		return
 	}
 	writer.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(writer).Encode(result)

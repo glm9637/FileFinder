@@ -21,7 +21,7 @@ async function searchArticle() {
   currentArticle = searchInput.value;
   const response = await fetch(`/api/search/${currentArticle}`);
   if (!response.ok) {
-    // TODO Handle Error
+    resultContainer!.innerText = "Es wurde keine Dateien gefunden";
     return Promise.reject(response.statusText);
   }
   let files = (await response.json()) as string[];
