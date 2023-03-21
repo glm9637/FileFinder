@@ -33,25 +33,40 @@ function searchArticle() {
             resultContainer.innerText = "Es wurde keine Dateien gefunden";
             return Promise.reject(response.statusText);
         }
-        let files = (yield response.json());
-        renderFiles(files);
+        let directory = (yield response.json());
+        renderDirectory(directory);
     });
 }
-function renderFiles(files) {
+function renderDirectory(directory) {
     resultContainer.innerHTML = "";
     let fragment = document.createDocumentFragment();
-    files.forEach((file) => {
-        const fileButton = document.createElement("button");
+    renderNestedDirectory(directory, fragment);
+    resultContainer === null || resultContainer === void 0 ? void 0 : resultContainer.appendChild(fragment);
+}
+function renderNestedDirectory(directory, parent) {
+    var _a, _b;
+    const list = document.createElement("ul");
+    const header = document.createElement("li");
+    header.innerText = directory.Name;
+    header.classList.add("header");
+    list.appendChild(header);
+    (_a = directory.Files) === null || _a === void 0 ? void 0 : _a.forEach((file) => {
+        const fileButton = document.createElement("li");
         fileButton.classList.add("file");
         fileButton.onclick = () => openFile(file);
-        fileButton.innerText = file;
-        fragment.appendChild(fileButton);
+        fileButton.innerText = file.Name;
+        list.appendChild(fileButton);
     });
-    resultContainer === null || resultContainer === void 0 ? void 0 : resultContainer.appendChild(fragment);
+    (_b = directory.Children) === null || _b === void 0 ? void 0 : _b.forEach((child) => {
+        const listItem = document.createElement("li");
+        renderNestedDirectory(child, listItem);
+        list.appendChild(listItem);
+    });
+    parent.appendChild(list);
 }
 function openFile(file) {
     return __awaiter(this, void 0, void 0, function* () {
-        const path = `/api/file/${currentArticle}/${file}`;
+        const path = `/api/file/${currentArticle}/${encodeURIComponent(file.Path)}`;
         window.open(path, "_blank");
     });
 }

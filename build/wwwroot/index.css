@@ -1,5 +1,6 @@
 body {
   background-color: #e2e2e2;
+  font-family: sans-serif;
 }
 
 #searchrow {
@@ -41,4 +42,22 @@ body {
   border-radius: 4px;
   margin: 2px 0;
   padding: 16px;
+  cursor: pointer;
+  list-style: inside;
+}
+
+ul {
+  list-style: none;
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid #cecece;
+  overflow: hidden;
+}
+
+.header {
+  font-size: 1.6rem;
+  font-weight: bold;
+  border-bottom: 1px solid #000000d3;
+  width: 60%;
+  margin-top: 8px;
 }
