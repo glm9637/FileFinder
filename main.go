@@ -12,9 +12,13 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
 	"github.com/joho/godotenv"
 )
+
+const PATH_ENV = "ROOT_PATH"
+const FILES_ENV = "ALLOWED_FILES"
+const FOLDERS_ENV = "ALLOWED_FOLDERS"
+const PORT_ENV = "PORT"
 
 type File struct {
 	Path string
@@ -29,11 +33,32 @@ type Directory struct {
 
 func main() {
 	loadEnvFile()
+	printSettings()
+
 	router := chi.NewRouter()
-	router.Use(middleware.Logger)
 	router.Route("/api", setupApi)
 	router.Handle("/*", http.FileServer(http.Dir("./wwwroot")))
-	http.ListenAndServe(":80", router)
+	err := http.ListenAndServe(":"+os.Getenv(PORT_ENV), router)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Server konnte nicht gestartet werden, vermutlich ist der Port bereits in Verwendung")
+		fmt.Scanln()
+	}
+}
+
+func printSettings() {
+	hostname, err := os.Hostname()
+	if err != nil {
+		panic(err)
+	}
+	port := os.Getenv(PORT_ENV)
+	path := os.Getenv(PATH_ENV)
+	files := os.Getenv(FILES_ENV)
+	folders := os.Getenv(FOLDERS_ENV)
+	fmt.Printf("Dateisuche erreichbar unter 'http://%s:%s'\n", hostname, port)
+	fmt.Printf("Dateien werden in dem Pfad '%s' gesucht\n", path)
+	fmt.Printf("Es werden Dateien mit den endungen '%s' gesucht\n", files)
+	fmt.Printf("Es werden Dateien in den Unterordnern '%s' gesucht\n", folders)
 }
 
 func loadEnvFile() {
@@ -112,7 +137,7 @@ func validateArticle(number string) bool {
 }
 
 func getFilePath(number string) string {
-	path := filepath.Join(os.Getenv("ROOT_PATH"))
+	path := filepath.Join(os.Getenv(PATH_ENV))
 	for _, v := range regexp.MustCompile("(^.|..)").FindAllString(number, -1) {
 		path = filepath.Join(path, v)
 	}
@@ -124,14 +149,14 @@ func isAllowedFile(file fs.DirEntry) bool {
 		return false
 	}
 	extension := filepath.Ext(file.Name())
-	return isInEnvironment(extension[1:], "ALLOWED_FILES")
+	return isInEnvironment(extension[1:], FILES_ENV)
 }
 
 func isAllowedDir(file fs.DirEntry) bool {
 	if !file.IsDir() {
 		return false
 	}
-	return isInEnvironment(file.Name(), "ALLOWED_FOLDERS")
+	return isInEnvironment(file.Name(), FOLDERS_ENV)
 }
 
 func isInEnvironment(name string, environmentVariable string) bool {
