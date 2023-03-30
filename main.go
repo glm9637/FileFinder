@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -81,11 +82,18 @@ func serveFile(writer http.ResponseWriter, request *http.Request) {
 	}
 	path := getFilePath(article)
 	filename := chi.URLParam(request, "name")
+	filename, err := url.QueryUnescape(filename)
+	if err != nil {
+		writer.WriteHeader(400)
+		return
+	}
+	fmt.Printf("Serving file: %v\n", filename)
 	file, err := os.ReadFile(filepath.Join(path, filename))
 	if err != nil {
 		writer.WriteHeader(404)
 		return
 	}
+
 	writer.Write(file)
 }
 
