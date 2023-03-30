@@ -17,6 +17,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build.zip
           asset_name: release.zip
-          tag: ${{ github.ref }}
           overwrite: true
           body: "Neue Version"
