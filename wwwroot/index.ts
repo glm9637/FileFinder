@@ -3,6 +3,11 @@ const searchInput = document.getElementById("search-input") as HTMLInputElement;
 const resultContainer = document.getElementById("results");
 const result = document.getElementById("result");
 const resultDisplay = document.getElementById("result-display");
+const uploadWrapper = document.querySelector<HTMLDivElement>(".wrapper")!;
+const uploadButton = document.querySelector<HTMLInputElement>("#file-upload");
+const toast = document.querySelector<HTMLDivElement>("#toast")!;
+let toastTimeout: number | undefined;
+uploadWrapper.style.display = "none";
 if (searchButton == null || searchInput == null || resultContainer == null) {
   throw new Error("Document not loaded");
 }
@@ -32,9 +37,11 @@ async function searchArticle() {
   currentArticle = searchInput.value;
   const response = await fetch(`/api/search/${currentArticle}`);
   if (!response.ok) {
+    uploadWrapper.style.display = "none";
     resultContainer!.innerText = "Es wurde keine Dateien gefunden";
     return Promise.reject(response.statusText);
   }
+  uploadWrapper.style.display = "";
   let directory = (await response.json()) as Directory;
   renderDirectory(directory);
 }
@@ -73,4 +80,35 @@ function renderNestedDirectory(
 async function openFile(file: FileResult) {
   const path = `/api/file/${currentArticle}/${encodeURIComponent(file.Path)}`;
   window.open(path, "_blank");
+}
+
+uploadButton?.addEventListener("change", uploadFile);
+async function uploadFile() {
+  const file = uploadButton?.files?.item(0);
+  if (file == null) {
+    return;
+  }
+  let formData = new FormData();
+
+  formData.append("photo", file);
+  const result = await fetch(`/api/file/${currentArticle}`, {
+    method: "POST",
+    body: formData,
+  });
+  if (result.ok) {
+    showToast("Datei erfolgreich hochgeladen");
+    return;
+  }
+  showToast(
+    "Es gabe einen Fehler beim Hochladen der Datei. Die Datei konnte nicht gespeichert werden!"
+  );
+}
+
+function showToast(message: string) {
+  if (toastTimeout != null) {
+    window.clearTimeout(toastTimeout);
+  }
+  toast.innerText = message;
+  toast.style.display = "inherit";
+  toastTimeout = window.setTimeout(() => (toast.style.display = "none"), 10000);
 }

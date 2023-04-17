@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/fs"
 	"log"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
@@ -20,6 +22,8 @@ const PATH_ENV = "ROOT_PATH"
 const FILES_ENV = "ALLOWED_FILES"
 const FOLDERS_ENV = "ALLOWED_FOLDERS"
 const PORT_ENV = "PORT"
+const UPLOAD_FOLDER = "UPLOAD_FOLDER"
+const UPLOAD_TO_ARTICLE_FOLDER = "UPLOAD_TO_ARTICLE_FOLDER"
 
 type File struct {
 	Path string
@@ -56,10 +60,19 @@ func printSettings() {
 	path := os.Getenv(PATH_ENV)
 	files := os.Getenv(FILES_ENV)
 	folders := os.Getenv(FOLDERS_ENV)
+	uploadFolder := os.Getenv(UPLOAD_FOLDER)
+	uploadToArticleFolder := os.Getenv(UPLOAD_TO_ARTICLE_FOLDER)
+	if uploadFolder == "" {
+		uploadFolder = "img"
+	}
 	fmt.Printf("Dateisuche erreichbar unter 'http://%s:%s'\n", hostname, port)
 	fmt.Printf("Dateien werden in dem Pfad '%s' gesucht\n", path)
 	fmt.Printf("Es werden Dateien mit den endungen '%s' gesucht\n", files)
 	fmt.Printf("Es werden Dateien in den Unterordnern '%s' gesucht\n", folders)
+	if uploadToArticleFolder == "1" {
+		fmt.Printf("Fotos werden in der zugehörigen Artikelordner gespeichert\n")
+	}
+	fmt.Printf("Fotos werden in dem Pfad '%s' gespeichert\n", uploadFolder)
 }
 
 func loadEnvFile() {
@@ -72,6 +85,49 @@ func loadEnvFile() {
 func setupApi(router chi.Router) {
 	router.Get("/search/{number}", searchFiles)
 	router.Get("/file/{number}/{name}", serveFile)
+	router.Post("/file/{number}", uploadFile)
+}
+
+func uploadFile(writer http.ResponseWriter, request *http.Request) {
+	article := chi.URLParam(request, "number")
+	if !validateArticle(article) {
+		writer.WriteHeader(400)
+		return
+	}
+	file, fileHeader, err := request.FormFile("photo")
+	if err != nil {
+		writer.WriteHeader(501)
+		fmt.Printf("%v", err)
+		return
+	}
+	path, err := getUploadFolder(article)
+	if err != nil {
+		writer.WriteHeader(501)
+		fmt.Printf("%v", err)
+		return
+	}
+	destinationPath := filepath.Join(path, fmt.Sprintf("%v_%v%v", article, time.Now().UnixNano(), filepath.Ext(fileHeader.Filename)))
+	destination, err := os.Create(destinationPath)
+	defer destination.Close()
+
+	_, err = io.Copy(destination, file)
+	if err != nil {
+		writer.WriteHeader(501)
+		fmt.Printf("%v", err)
+		return
+	}
+}
+
+func getUploadFolder(article string) (string, error) {
+	uploadFolder := os.Getenv(UPLOAD_FOLDER)
+	if uploadFolder == "" {
+		uploadFolder = "img"
+	}
+	if os.Getenv(UPLOAD_TO_ARTICLE_FOLDER) == "1" {
+		uploadFolder = filepath.Join(getFilePath(article), uploadFolder)
+	}
+	err := os.MkdirAll(uploadFolder, os.ModePerm)
+	return uploadFolder, err
 }
 
 func serveFile(writer http.ResponseWriter, request *http.Request) {

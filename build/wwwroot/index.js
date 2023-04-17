@@ -13,6 +13,11 @@ const searchInput = document.getElementById("search-input");
 const resultContainer = document.getElementById("results");
 const result = document.getElementById("result");
 const resultDisplay = document.getElementById("result-display");
+const uploadWrapper = document.querySelector(".wrapper");
+const uploadButton = document.querySelector("#file-upload");
+const toast = document.querySelector("#toast");
+let toastTimeout;
+uploadWrapper.style.display = "none";
 if (searchButton == null || searchInput == null || resultContainer == null) {
     throw new Error("Document not loaded");
 }
@@ -30,9 +35,11 @@ function searchArticle() {
         currentArticle = searchInput.value;
         const response = yield fetch(`/api/search/${currentArticle}`);
         if (!response.ok) {
+            uploadWrapper.style.display = "none";
             resultContainer.innerText = "Es wurde keine Dateien gefunden";
             return Promise.reject(response.statusText);
         }
+        uploadWrapper.style.display = "";
         let directory = (yield response.json());
         renderDirectory(directory);
     });
@@ -69,4 +76,33 @@ function openFile(file) {
         const path = `/api/file/${currentArticle}/${encodeURIComponent(file.Path)}`;
         window.open(path, "_blank");
     });
+}
+uploadButton === null || uploadButton === void 0 ? void 0 : uploadButton.addEventListener("change", uploadFile);
+function uploadFile() {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const file = (_a = uploadButton === null || uploadButton === void 0 ? void 0 : uploadButton.files) === null || _a === void 0 ? void 0 : _a.item(0);
+        if (file == null) {
+            return;
+        }
+        let formData = new FormData();
+        formData.append("photo", file);
+        const result = yield fetch(`/api/file/${currentArticle}`, {
+            method: "POST",
+            body: formData,
+        });
+        if (result.ok) {
+            showToast("Datei erfolgreich hochgeladen");
+            return;
+        }
+        showToast("Es gabe einen Fehler beim Hochladen der Datei. Die Datei konnte nicht gespeichert werden!");
+    });
+}
+function showToast(message) {
+    if (toastTimeout != null) {
+        window.clearTimeout(toastTimeout);
+    }
+    toast.innerText = message;
+    toast.style.display = "inherit";
+    toastTimeout = window.setTimeout(() => (toast.style.display = "none"), 10000);
 }
