@@ -27,7 +27,6 @@ searchButton.onclick = searchArticle;
 searchInput.onkeydown = checkForSubmit;
 
 function checkForSubmit(event: KeyboardEvent) {
-  console.log(event);
   if (event.key === "Enter") {
     searchArticle();
   }
@@ -78,7 +77,9 @@ function renderNestedDirectory(
 }
 
 async function openFile(file: FileResult) {
-  const path = `/api/file/${currentArticle}/${encodeURIComponent(file.Path)}`;
+  const path = `/api/file/${currentArticle}/${new Date().getTime()}/${encodeURIComponent(
+    file.Path
+  )}`;
   window.open(path, "_blank");
 }
 

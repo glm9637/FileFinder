@@ -25,7 +25,6 @@ let currentArticle = "";
 searchButton.onclick = searchArticle;
 searchInput.onkeydown = checkForSubmit;
 function checkForSubmit(event) {
-    console.log(event);
     if (event.key === "Enter") {
         searchArticle();
     }
@@ -73,7 +72,7 @@ function renderNestedDirectory(directory, parent) {
 }
 function openFile(file) {
     return __awaiter(this, void 0, void 0, function* () {
-        const path = `/api/file/${currentArticle}/${encodeURIComponent(file.Path)}`;
+        const path = `/api/file/${currentArticle}/${new Date().getTime()}/${encodeURIComponent(file.Path)}`;
         window.open(path, "_blank");
     });
 }

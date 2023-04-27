@@ -84,7 +84,7 @@ func loadEnvFile() {
 
 func setupApi(router chi.Router) {
 	router.Get("/search/{number}", searchFiles)
-	router.Get("/file/{number}/{name}", serveFile)
+	router.Get("/file/{number}/{random}/{name}", serveFile)
 	router.Post("/file/{number}", uploadFile)
 }
 
@@ -108,8 +108,12 @@ func uploadFile(writer http.ResponseWriter, request *http.Request) {
 	}
 	destinationPath := filepath.Join(path, fmt.Sprintf("%v_%v%v", article, time.Now().UnixNano(), filepath.Ext(fileHeader.Filename)))
 	destination, err := os.Create(destinationPath)
+	if err != nil {
+		writer.WriteHeader(501)
+		fmt.Printf("%v", err)
+		return
+	}
 	defer destination.Close()
-
 	_, err = io.Copy(destination, file)
 	if err != nil {
 		writer.WriteHeader(501)
@@ -124,7 +128,7 @@ func getUploadFolder(article string) (string, error) {
 		uploadFolder = "img"
 	}
 	if os.Getenv(UPLOAD_TO_ARTICLE_FOLDER) == "1" {
-		uploadFolder = filepath.Join(getFilePath(article), uploadFolder)
+		uploadFolder = filepath.Join(uploadFolder, article)
 	}
 	err := os.MkdirAll(uploadFolder, os.ModePerm)
 	return uploadFolder, err
