@@ -1,0 +1,5 @@
+package: gen
+generate:
+  std-http-server: true
+  models: true
+output: ../internal/gen/gen.go

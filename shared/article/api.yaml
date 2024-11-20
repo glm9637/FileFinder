@@ -1,0 +1,184 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Example.com
+servers:
+  - url: "/api"
+paths:
+  "/article/{number}":
+    get:
+      security: []
+      summary: "Query a article"
+      operationId: "getArticle"
+      parameters:
+        - name: number
+          in: path
+          description: the number of the article
+          schema:
+            type: string
+      responses:
+        200:
+          description: the article
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Article"
+        404:
+          description: the Article was not found
+  "/article/{number}/bom":
+    get:
+      security: []
+      summary: get a bom of the article
+      operationId: "getBom"
+      parameters:
+        - name: number
+          in: path
+          description: the number of the article
+          schema:
+            type: string
+      responses:
+        200:
+          description: the bom of the article
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BOM"
+        404:
+          description: the Article was not found
+  "/article/{number}/bom/full":
+    get:
+      security: []
+      summary: get the full bom of the article
+      operationId: "getFullBom"
+      parameters:
+        - name: number
+          in: path
+          description: the number of the article
+          schema:
+            type: string
+      responses:
+        200:
+          description: the full BOM of the article
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FullBom"
+        404:
+          description: the article was not found
+  "/article/{number}/file":
+    post:
+      security: []
+      summary: uploads a new file to the specified article
+      operationId: "uploadFile"
+      parameters:
+        - name: number
+          in: path
+          description: the number of the article the file belongs to
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data":
+            schema:
+              type: object
+              properties:
+                photo:
+                  type: string
+                  format: binary
+
+  "/article/{number}/file/{path}":
+    get:
+      security: []
+      summary: get the specified file
+      operationId: "getFile"
+      parameters:
+        - name: number
+          in: path
+          schema:
+            type: string
+        - name: path
+          in: path
+          schema:
+            type: string
+      responses:
+        200:
+          description: the specified file
+          headers:
+            cache-control:
+              description: the max length this content is valid
+              schema:
+                type: string
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        404:
+          description: the article or file was not found
+components:
+  schemas:
+    Article:
+      type: object
+      properties:
+        number:
+          description: Article number
+          type: string
+          minLength: 7
+          example: 9000004
+        files:
+          description: The folder structure found in the articles folder
+          type: array
+          items:
+            $ref: "#/components/schemas/FileSystem"
+          minLength: 1
+
+    FileSystem:
+      type: object
+      properties:
+        name:
+          type: string
+          description: the current folder name
+        path:
+          type: string
+          description: the path to the folder
+        type:
+          type: string
+          enum:
+            - "file"
+            - "folder"
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/FileSystem"
+    BOM:
+      type: object
+      properties:
+        name:
+          type: string
+          description: the name of the article
+        materials:
+          type: array
+          items:
+            $ref: "#/components/schemas/Material"
+    Material:
+      type: object
+      properties:
+        number:
+          type: string
+          description: the article number
+        name:
+          type: string
+          description: the name of the article
+    FullBom:
+      type: object
+      properties:
+        number:
+          type: string
+          description: the article number
+        name:
+          type: string
+          description: the name of the article
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/FullBom"
