@@ -1,5 +1,0 @@
-P:\9\00\00\06\STAMM\AENDERUNGEN.txt
-PDU\GESAMT: Erlaeuterungen hinzugefuegt-28.11.2023-13:04:14-d.kersten
-Schrauben Stl-05.06.2024-14:54:50-d.kersten
-PDU\GESAMT: Stl Schrauben-05.06.2024-14:55:55-d.kersten
-STL aktualisiert-30.07.2024-08:29:36-d.sons
