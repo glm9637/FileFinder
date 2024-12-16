@@ -2,11 +2,9 @@
   type="text"
   class="filter"
   [formControl]="filter"
-  placeholder="Artikel Filtern"
-/>
+  placeholder="Artikel Filtern" />
 
 <app-tree
   [items]="filteredTreeData()"
   (itemSelected)="itemSelected($event)"
-  [outputOnNonNode]="true"
-></app-tree>
+  [outputOnNonNode]="true"></app-tree>

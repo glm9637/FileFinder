@@ -1,19 +1,14 @@
-import {
-  Component,
-  computed,
-  inject,
-  input,
-  SecurityContext,
-} from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { FileSystem } from '../../../api/models/file-system';
 import { DomSanitizer } from '@angular/platform-browser';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 export interface ArticleFile {
   article: string;
   file: FileSystem;
 }
 @Component({
   selector: 'app-file',
-  imports: [],
+  imports: [PdfViewerModule],
   templateUrl: './file.component.html',
   styleUrl: './file.component.scss',
 })

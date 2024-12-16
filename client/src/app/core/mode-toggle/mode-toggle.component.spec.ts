@@ -8,9 +8,8 @@ describe('ModeToggleComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ModeToggleComponent]
-    })
-    .compileComponents();
+      imports: [ModeToggleComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ModeToggleComponent);
     component = fixture.componentInstance;

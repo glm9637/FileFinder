@@ -1,6 +1,6 @@
 import { Component, effect, inject, signal, ViewChild } from '@angular/core';
 import { BomComponent } from './components/bom/bom.component';
-import { ArticleFile, FileComponent } from './components/file/file.component';
+import { FileComponent } from './components/file/file.component';
 import { FilesComponent } from './components/files/files.component';
 import { SidebarComponent, Tab } from './components/sidebar/sidebar.component';
 import { TopbarComponent } from './components/topbar/topbar.component';
@@ -33,7 +33,7 @@ export class DetailComponent {
   private fileService = inject(FileService);
   protected scannerMode = toSignal(
     inject(ConfigService).applicationMode$.pipe(
-      map((x) => x == ApplicationMode.Scanner)
+      map(x => x == ApplicationMode.Scanner)
     )
   );
   protected article = toSignal(this.dataService.files$);
@@ -73,7 +73,7 @@ export class DetailComponent {
   }
 
   private articleChanges = effect(() => {
-    let article = this.article();
+    const article = this.article();
     if (article == null) {
       return;
     }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { distinctUntilChanged, map, mergeWith, Subject, tap } from 'rxjs';
+import { distinctUntilChanged, map, mergeWith, Subject } from 'rxjs';
 import { FileSystem } from '../../api/models/file-system';
 import { FullBom } from '../../api/models/full-bom';
 
@@ -16,7 +16,7 @@ export class FileService {
   private fileSubject = new Subject<ArticleFile>();
 
   public currentFile$ = this.fileSubject.pipe(
-    map((file) => {
+    map(file => {
       if (file == null || file.file.path == null || file.file.name == null) {
         return null;
       }
@@ -28,7 +28,7 @@ export class FileService {
     }),
     mergeWith(
       this.articleSubject.pipe(
-        map((article) => {
+        map(article => {
           const fullPath = `/api/article/${article.number}/file`;
           const url = URL.parse(fullPath, window.location.origin);
           return url;

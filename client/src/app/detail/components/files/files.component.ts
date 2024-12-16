@@ -1,6 +1,5 @@
 import { Component, computed, input, output, ViewChild } from '@angular/core';
 import { FileSystem } from '../../../api/models/file-system';
-import { CommonModule } from '@angular/common';
 import { TreeComponent, TreeItem } from '../../../core/tree/tree.component';
 import { FullBom } from '../../../api/models/full-bom';
 
@@ -12,13 +11,13 @@ import { FullBom } from '../../../api/models/full-bom';
 })
 export class FilesComponent {
   @ViewChild(TreeComponent) tree: TreeComponent<FullBom> | undefined;
-  public files = input<Array<FileSystem>>();
+  public files = input<FileSystem[]>();
   public fileSelected = output<FileSystem>();
 
   protected treeData = computed(() => {
-    let current = this.files();
+    const current = this.files();
     if (current) {
-      return current.map((c) => this.mapToTreeItem(c));
+      return current.map(c => this.mapToTreeItem(c));
     }
     return [];
   });
@@ -33,16 +32,15 @@ export class FilesComponent {
 
   private mapToTreeItem(
     item: FileSystem,
-    expanded: boolean = true
+    expanded = true
   ): TreeItem<FileSystem> {
     return {
       label: `${item.name ?? ''}`,
       item: item,
       expanded,
       children:
-        item.children
-          ?.map((c) => this.mapToTreeItem(c))
-          .filter((x) => x != null) ?? null,
+        item.children?.map(c => this.mapToTreeItem(c)).filter(x => x != null) ??
+        null,
     };
   }
 

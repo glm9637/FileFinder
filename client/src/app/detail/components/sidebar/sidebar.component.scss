@@ -30,7 +30,7 @@
 .active {
   opacity: 1;
   &::before {
-    content: "";
+    content: '';
     background-color: var(--font-primary);
     height: inherit;
     width: 4px;

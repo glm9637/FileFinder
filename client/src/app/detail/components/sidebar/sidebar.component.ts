@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, input, output, signal } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 
 export enum Tab {
   Bom,

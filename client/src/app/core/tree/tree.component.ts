@@ -50,7 +50,7 @@ export class TreeComponent<T> {
 
   public selectNext() {
     const list = this.itemList();
-    this.selected.update((item) => {
+    this.selected.update(item => {
       if (item == null) {
         if (list.length == 0) {
           return item;
@@ -70,7 +70,7 @@ export class TreeComponent<T> {
 
   public selectPrevious() {
     const list = this.itemList();
-    this.selected.update((item) => {
+    this.selected.update(item => {
       if (item == null) {
         if (list.length == 0) {
           return item;
@@ -95,8 +95,8 @@ export class TreeComponent<T> {
       return [];
     }
     return [
-      ...items.filter((x) => x.children == null),
-      ...items.flatMap((i) => this.toList(i.children ?? [], includeAllNodes)),
+      ...items.filter(x => x.children == null),
+      ...items.flatMap(i => this.toList(i.children ?? [], includeAllNodes)),
     ];
   }
 

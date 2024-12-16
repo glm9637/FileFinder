@@ -18,10 +18,10 @@ export class BomComponent {
   public bomSelected = output<Bom>();
   protected filter = new FormBuilder().nonNullable.control('');
   private filterValue = toSignal(
-    this.filter.valueChanges.pipe(tap((x) => console.log(x)))
+    this.filter.valueChanges.pipe(tap(x => console.log(x)))
   );
   protected treeData = computed(() => {
-    let current = this.bom();
+    const current = this.bom();
     if (current) {
       return [this.mapToTreeItem(current, true)];
     }
@@ -29,12 +29,12 @@ export class BomComponent {
   });
 
   protected filteredTreeData = computed(() => {
-    let full = this.treeData();
+    const full = this.treeData();
     let filter = this.filterValue()?.toLowerCase();
     if (filter == null || filter == '') {
       filter = '';
     }
-    full.forEach((item) => {
+    full.forEach(item => {
       item.display = this.filterTreeItem(item, filter);
     });
     return full;
@@ -53,25 +53,21 @@ export class BomComponent {
     if (item.children == null) {
       return result;
     }
-    item.children.forEach((item) => {
+    item.children.forEach(item => {
       item.display = this.filterTreeItem(item, search);
       result = result || item.display;
     });
     return result;
   }
 
-  private mapToTreeItem(
-    item: FullBom,
-    expanded: boolean = false
-  ): TreeItem<FullBom> {
+  private mapToTreeItem(item: FullBom, expanded = false): TreeItem<FullBom> {
     return {
       label: `${item.number} ${item.name ?? ''}`,
       item: item,
       expanded,
       children:
-        item.children
-          ?.map((c) => this.mapToTreeItem(c))
-          .filter((x) => x != null) ?? null,
+        item.children?.map(c => this.mapToTreeItem(c)).filter(x => x != null) ??
+        null,
     };
   }
 

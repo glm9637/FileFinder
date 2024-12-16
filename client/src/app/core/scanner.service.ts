@@ -23,7 +23,6 @@ export class ScannerService {
   public event$ = this.eventSubject.asObservable();
   public article$ = this.articleSubject.asObservable();
   public error$ = this.errorSubject.asObservable();
-  constructor() {}
 
   private handleInput = (event: KeyboardEvent) => {
     if (event.key == this.SCANNER_END_SYMBOL) {

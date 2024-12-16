@@ -2,16 +2,14 @@
 <div class="body">
   <app-sidebar
     (selectionChanged)="setTab($event)"
-    [enableBom]="scannerMode() == false"
-  ></app-sidebar>
+    [enableBom]="scannerMode() === false"></app-sidebar>
   <div class="tree">
-    @if (currentTab() == Tab.Bom) {
-    <app-bom [bom]="bom()" (bomSelected)="bomSelected($event)"></app-bom>} @else
-    {
-    <app-files
-      [files]="article()?.files"
-      (fileSelected)="fileSelected($event)"
-    ></app-files>
+    @if (currentTab() === Tab.Bom) {
+      <app-bom [bom]="bom()" (bomSelected)="bomSelected($event)"></app-bom>
+    } @else {
+      <app-files
+        [files]="article()?.files"
+        (fileSelected)="fileSelected($event)"></app-files>
     }
   </div>
   <div class="content">

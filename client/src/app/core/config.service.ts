@@ -23,10 +23,10 @@ export class ConfigService {
   private breakpointObserver = inject(BreakpointObserver);
   private isMobile$ = this.breakpointObserver
     .observe(Breakpoints.Small)
-    .pipe(map((x) => x.matches));
+    .pipe(map(x => x.matches));
 
   public applicationMode$ = this.mode.pipe(
-    tap((mode) => {
+    tap(mode => {
       window.localStorage.setItem(this.MODE_KEY, mode);
       if (mode == ApplicationMode.Scanner) {
         this.scannerService.enableScanner();
@@ -34,13 +34,12 @@ export class ConfigService {
         this.scannerService.disableScanner();
       }
     }),
-    switchMap((mode) =>
+    switchMap(mode =>
       this.isMobile$.pipe(
-        map((isMobile) => (isMobile ? ApplicationMode.Mobile : mode))
+        map(isMobile => (isMobile ? ApplicationMode.Mobile : mode))
       )
     )
   );
-  constructor() {}
   public setMode(mode: ApplicationMode.Keyboard | ApplicationMode.Scanner) {
     this.mode.next(mode);
   }

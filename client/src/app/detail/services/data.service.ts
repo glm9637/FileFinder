@@ -10,18 +10,16 @@ export class DataService {
   private readonly apiService = inject(ApiService);
 
   public files$ = this.numberSubject.pipe(
-    filter((number) => number != null),
-    mergeMap((number) => this.apiService.getArticle({ number })),
+    filter(number => number != null),
+    mergeMap(number => this.apiService.getArticle({ number })),
     shareReplay(1)
   );
 
   public fulllBom$ = this.numberSubject.pipe(
-    filter((number) => number != null),
-    mergeMap((number) => this.apiService.getFullBom({ number })),
+    filter(number => number != null),
+    mergeMap(number => this.apiService.getFullBom({ number })),
     shareReplay(1)
   );
-
-  constructor() {}
 
   public setNumber(number: string): void {
     this.numberSubject.next(number);
