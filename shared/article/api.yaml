@@ -85,7 +85,30 @@ paths:
                 photo:
                   type: string
                   format: binary
-
+    get:
+      security: []
+      summary: get the default file for the article
+      operationId: "getArticleFile"
+      parameters:
+        - name: number
+          in: path
+          schema:
+            type: string
+      responses:
+        200:
+          description: the default file
+          headers:
+            cache-control:
+              description: the max length this content is valid
+              schema:
+                type: string
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        404:
+          description: the article or file was not found
   "/article/{number}/file/{path}":
     get:
       security: []

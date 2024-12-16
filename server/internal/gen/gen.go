@@ -90,6 +90,9 @@ type ServerInterface interface {
 	// get the full bom of the article
 	// (GET /article/{number}/bom/full)
 	GetFullBom(w http.ResponseWriter, r *http.Request, number string)
+	// get the default file for the article
+	// (GET /article/{number}/file)
+	GetArticleFile(w http.ResponseWriter, r *http.Request, number string)
 	// uploads a new file to the specified article
 	// (POST /article/{number}/file)
 	UploadFile(w http.ResponseWriter, r *http.Request, number string)
@@ -173,6 +176,31 @@ func (siw *ServerInterfaceWrapper) GetFullBom(w http.ResponseWriter, r *http.Req
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetFullBom(w, r, number)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetArticleFile operation middleware
+func (siw *ServerInterfaceWrapper) GetArticleFile(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// ------------- Path parameter "number" -------------
+	var number string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "number", r.PathValue("number"), &number, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: false})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "number", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetArticleFile(w, r, number)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -330,7 +358,6 @@ type StdHTTPServerOptions struct {
 
 // HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
 func HandlerFromMux(si ServerInterface, m ServeMux) http.Handler {
-	
 	return HandlerWithOptions(si, StdHTTPServerOptions{
 		BaseRouter: m,
 	})
@@ -355,15 +382,17 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 	}
-	
+
 	wrapper := ServerInterfaceWrapper{
 		Handler:            si,
 		HandlerMiddlewares: options.Middlewares,
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
+
 	m.HandleFunc("GET "+options.BaseURL+"/article/{number}", wrapper.GetArticle)
 	m.HandleFunc("GET "+options.BaseURL+"/article/{number}/bom", wrapper.GetBom)
 	m.HandleFunc("GET "+options.BaseURL+"/article/{number}/bom/full", wrapper.GetFullBom)
+	m.HandleFunc("GET "+options.BaseURL+"/article/{number}/file", wrapper.GetArticleFile)
 	m.HandleFunc("POST "+options.BaseURL+"/article/{number}/file", wrapper.UploadFile)
 	m.HandleFunc("GET "+options.BaseURL+"/article/{number}/file/{path}", wrapper.GetFile)
 

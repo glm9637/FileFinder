@@ -22,3 +22,15 @@ func GetArticle(config config.AppConfig, number string) (gen.Article, error) {
 		Files:  &files,
 	}, nil
 }
+
+func GetDefaultFilePath(config config.AppConfig, number string) (string, error) {
+	path, err := fshelper.GetFilePath(config, number)
+	if err != nil {
+		return "", fmt.Errorf("no article with number %v found", number)
+	}
+	path, hasData := fshelper.GetDefaultFile(config, number, path)
+	if !hasData {
+		return "", fmt.Errorf("no article with number %v found", number)
+	}
+	return path, nil
+}

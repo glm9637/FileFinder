@@ -1,0 +1,27 @@
+:host {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.body {
+  display: flex;
+  height: 100%;
+}
+
+.tree {
+  background-color: var(--secondary);
+  min-width: 30rem;
+  max-width: 40%;
+  height: 100%;
+  max-height: 100%;
+  overflow: auto;
+  padding-bottom: 12rem;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--tertiary);
+  width: 100%;
+}

@@ -1,0 +1,17 @@
+<div class="tabs">
+  <div
+    [class.active]="selection() == Selection.Bom"
+    [class.disabled]="!enableBom()"
+    class="tab"
+    (click)="setBom()"
+  >
+    <img src="bom.svg" alt="Stückliste" class="icon" />
+  </div>
+  <div
+    [class.active]="selection() == Selection.Folder"
+    class="tab"
+    (click)="setFolder()"
+  >
+    <img src="folder.svg" alt="Dateien" class="icon" />
+  </div>
+</div>

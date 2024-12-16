@@ -1,1 +1,85 @@
-/* You can add global styles to this file, and also import other style files */
+/* 1. Use a more-intuitive box-sizing model */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+/* 2. Remove default margin */
+* {
+  margin: 0;
+}
+body {
+  /* 3. Add accessible line-height */
+  line-height: 1.5;
+  /* 4. Improve text rendering */
+  -webkit-font-smoothing: antialiased;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
+}
+/* 5. Improve media defaults */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+/* 6. Inherit fonts for form controls */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+/* 7. Avoid text overflows */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+/* 8. Improve line wrapping */
+p {
+  text-wrap: pretty;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+:root {
+  --primary: #fcb194;
+  --secondary: #fccfbc;
+  --tertiary: #fcefe7;
+  --input: #fff;
+  --font-primary: #fff;
+  --font-primary-disabled: #ffffffbd;
+  --font-secondary: #000;
+  --font-placeholder: #b3b3b3;
+}
+
+.scanner {
+  --primary: #92ab6b;
+  --secondary: #d3e0bb;
+  --tertiary: #ffffff;
+  --input: #ffffff;
+  --font-primary: #ffffff;
+  --font-primary-disabled: #ffffff;
+  --font-secondary: #000;
+  --font-placeholder: #b3b3b3;
+}

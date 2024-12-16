@@ -1,0 +1,26 @@
+.search {
+  width: 100%;
+  display: flex;
+  padding: 0 8px;
+  background: var(--input);
+  border: none;
+  border-radius: 4px;
+  overflow: hidden;
+
+  .input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 1.3rem;
+    &:active &:focus {
+      border: none;
+      outline: none;
+    }
+  }
+
+  .submit {
+    background: transparent;
+    border: none;
+    outline: none;
+  }
+}

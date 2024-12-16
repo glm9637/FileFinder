@@ -21,12 +21,46 @@ type Server struct {
 	config config.Config
 }
 
+// GetArticleFile implements gen.ServerInterface.
+func (s Server) GetArticleFile(w http.ResponseWriter, r *http.Request, number string) {
+	filePath, err := article.GetDefaultFilePath(s.config.App, number)
+	if err != nil {
+		log.Println(err.Error())
+		writeNotFound(w, r)
+		return
+	}
+	file, err := os.ReadFile(filePath)
+	if err != nil {
+		writeNotFound(w, r)
+		return
+	}
+	w.Header().Add("Cache-Control", "no-cache")
+	w.Write(file)
+
+}
+
+func writeNotFound(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
+	w.Write([]byte(`
+	<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <img src="../../../no-result.svg" alt="No Result" style="width:40rem; margin: 8rem" />
+  </body>
+</html>`))
+}
+
 // GetArticle implements ServerInterface.
 func (s Server) GetArticle(w http.ResponseWriter, r *http.Request, number string) {
 	response, err := article.GetArticle(s.config.App, number)
 
 	if err != nil {
-		log.Printf(err.Error())
+		log.Println(err.Error())
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}

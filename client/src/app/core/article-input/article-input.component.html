@@ -1,0 +1,12 @@
+<form (ngSubmit)="handleSearch()" class="search">
+  <input type="text" [formControl]="searchForm" class="input" />
+  @if (searchForm.errors) {
+  <button type="button" class="submit" (click)="reset()">
+    <img src="icons/cancel.svg" alt="suche" />
+  </button>
+  } @else {
+  <button type="submit" class="submit">
+    <img src="icons/search.svg" alt="suche" />
+  </button>
+  }
+</form>

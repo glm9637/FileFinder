@@ -1,0 +1,9 @@
+@if(appMode$ | async; as mode){
+  <div (click)="toggleMode(mode)">
+    @if(mode == AppMode.Scanner){
+    <img src="keyboard.svg" alt="Keyboard Toggle">
+  }@else if (mode == AppMode.Keyboard) {
+    <img src="scan.svg" alt="Scan Toggle">
+  }
+  </div>
+  }

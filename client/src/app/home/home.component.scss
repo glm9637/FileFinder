@@ -1,0 +1,44 @@
+.background {
+  background: radial-gradient(
+    circle,
+    var(--primary) 80%,
+    var(--secondary) 90%,
+    var(--tertiary) 110%
+  );
+  transition-duration: 400ms;
+  transition-property: background;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+}
+
+.title {
+  font-family: Tahoma, sans-serif;
+  font-weight: lighter;
+  color: var(--font-primary);
+  font-size: 4rem;
+}
+
+::placeholder {
+  color: var(--font-placeholder);
+  text-align: center;
+}
+
+.search {
+  width: 70%;
+  max-width: 1200px;
+  margin: 6rem;
+}
+
+.illustration {
+  width: 25%;
+  max-width: 400px;
+}
+
+.toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+}

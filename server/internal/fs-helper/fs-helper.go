@@ -60,6 +60,31 @@ func AnalyseDirectory(config config.AppConfig, article string, path string) (dir
 	return directory, len(directory) > 0
 }
 
+func GetDefaultFile(config config.AppConfig, article string, path string) (file string, hasData bool) {
+
+	files, err := os.ReadDir(path)
+	if err != nil {
+		log.Printf("Der Pfad %v konnte nicht gelesen werden.\n%v", path, err)
+		hasData = false
+		return "", false
+	}
+
+	for _, fi := range files {
+		if validator.IsAllowedDir(config, fi) {
+
+			result, ok := GetDefaultFile(config, article, filepath.Join(path, fi.Name()))
+			if ok {
+				return result, ok
+			}
+			continue
+		}
+		if validator.IsAllowedFile(config, fi) {
+			return filepath.Join(path, fi.Name()), true
+		}
+	}
+	return "", false
+}
+
 func UploadFile(path string, file multipart.File) error {
 	destination, err := os.Create(path)
 	if err != nil {
