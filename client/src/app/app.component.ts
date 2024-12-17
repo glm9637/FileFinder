@@ -1,8 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ApplicationMode, ConfigService } from './core/config.service';
-import { map } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { ConfigState } from './core/config/config.state';
+import { Store } from '@ngxs/store';
+import { WatchDisplaySize } from './core/config/config.actions';
+import { ArticleInitActions } from './state/article/article.actions';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +12,11 @@ import { CommonModule } from '@angular/common';
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  public modeClass$ = inject(ConfigService).applicationMode$.pipe(
-    map(x => (x == ApplicationMode.Scanner ? 'scanner' : ''))
-  );
+  private readonly store = inject(Store);
+
+  public modeClass = this.store.selectSignal(ConfigState.getAppMode);
+
+  constructor() {
+    this.store.dispatch([WatchDisplaySize, ...ArticleInitActions]);
+  }
 }

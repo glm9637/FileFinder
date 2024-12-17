@@ -5,7 +5,6 @@ import { TreeComponent, TreeItem } from '../../../core/tree/tree.component';
 import { Bom } from '../../../api/models/bom';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { tap } from 'rxjs';
 
 @Component({
   selector: 'app-bom',
@@ -14,12 +13,10 @@ import { tap } from 'rxjs';
   styleUrl: './bom.component.scss',
 })
 export class BomComponent {
-  public bom = input<FullBom>();
-  public bomSelected = output<Bom>();
+  public bom = input<FullBom | null>();
+  public bomSelected = output<FullBom>();
   protected filter = new FormBuilder().nonNullable.control('');
-  private filterValue = toSignal(
-    this.filter.valueChanges.pipe(tap(x => console.log(x)))
-  );
+  private filterValue = toSignal(this.filter.valueChanges);
   protected treeData = computed(() => {
     const current = this.bom();
     if (current) {
@@ -31,13 +28,18 @@ export class BomComponent {
   protected filteredTreeData = computed(() => {
     const full = this.treeData();
     let filter = this.filterValue()?.toLowerCase();
+    console.log(filter);
     if (filter == null || filter == '') {
       filter = '';
     }
-    full.forEach(item => {
-      item.display = this.filterTreeItem(item, filter);
-    });
-    return full;
+
+    const result = [
+      ...full.map(item => {
+        item.display = this.filterTreeItem(item, filter);
+        return item;
+      }),
+    ];
+    return result;
   });
 
   private filterTreeItem(item: TreeItem<FullBom>, search: string): boolean {

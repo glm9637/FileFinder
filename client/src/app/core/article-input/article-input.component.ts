@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, output } from '@angular/core';
+import { Component, effect, input, output } from '@angular/core';
 import {
   FormBuilder,
   FormsModule,
@@ -14,6 +14,22 @@ import {
   styleUrl: './article-input.component.scss',
 })
 export class ArticleInputComponent {
+  public disabled = input(false);
+  public value = input('');
+
+  public valueSet = effect(() => {
+    const number = this.value();
+    this.searchForm.setValue(number);
+  });
+
+  public disabledSet = effect(() => {
+    if (this.disabled()) {
+      this.searchForm.disable();
+      return;
+    }
+    this.searchForm.enable();
+  });
+
   public searchForm = new FormBuilder().nonNullable.control(
     '',
     Validators.pattern(/^\d{7}$/)

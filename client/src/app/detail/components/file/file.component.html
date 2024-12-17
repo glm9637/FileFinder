@@ -1,3 +1,11 @@
+
+@if(hasError()){
+  <h3 class="err-txt">Datei konnte nicht gefunden werden</h3>
+  <img class="err-img" src="no-result.svg" alt="Datei nicht gefunden">
+}
+
+
 @if (url(); as url) {
-  <pdf-viewer class="file" [src]="url" [render-text]="true" [autoresize]="true"></pdf-viewer>
+  <pdf-viewer class="file" [src]="url" [render-text]="true" [autoresize]="true" [original-size]="true" [fit-to-page]="true"
+  (error)="onError($event)"></pdf-viewer>
 }

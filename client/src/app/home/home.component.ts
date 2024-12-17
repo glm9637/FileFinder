@@ -1,10 +1,9 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModeToggleComponent } from '../core/mode-toggle/mode-toggle.component';
 import { ArticleInputComponent } from '../core/article-input/article-input.component';
-import { Router } from '@angular/router';
-import { ScannerService } from '../core/scanner.service';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Store } from '@ngxs/store';
+import { SetNumber } from '../state/article/article.actions';
 
 @Component({
   selector: 'app-home',
@@ -13,16 +12,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
   styleUrl: './home.component.scss',
 })
 export class HomeComponent {
-  private readonly router = inject(Router);
-  private readonly article = toSignal(inject(ScannerService).article$);
-  private readonly scannerEffect = effect(() => {
-    const article = this.article();
-    console.log(article);
-    if (article != null) {
-      this.handleSearch(article);
-    }
-  });
+  private store = inject(Store);
   public handleSearch(article: string): void {
-    this.router.navigate([article]);
+    this.store.dispatch(new SetNumber(article));
   }
 }

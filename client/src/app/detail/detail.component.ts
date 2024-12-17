@@ -4,16 +4,23 @@ import { FileComponent } from './components/file/file.component';
 import { FilesComponent } from './components/files/files.component';
 import { SidebarComponent, Tab } from './components/sidebar/sidebar.component';
 import { TopbarComponent } from './components/topbar/topbar.component';
-import { DataService } from './services/data.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { FileSystem } from '../api/models/file-system';
-import { FileService } from './services/file.service';
-import { Bom } from '../api/models/bom';
+import {
+  ScannerCommand,
+  ScannerService,
+} from '../core/scanner/scanner.service';
+import { Store } from '@ngxs/store';
+import { ConfigState } from '../core/config/config.state';
+import { ArticleState } from '../state/article/article.state';
+import {
+  LoadDefaultFile,
+  LoadFile,
+  SetNumber,
+} from '../state/article/article.actions';
+import { FullBom } from '../api/models';
 import { Router } from '@angular/router';
-import { ApplicationMode, ConfigService } from '../core/config.service';
-import { map } from 'rxjs';
-import { ScannerCommand, ScannerService } from '../core/scanner.service';
 
 @Component({
   selector: 'app-detail',
@@ -29,24 +36,24 @@ import { ScannerCommand, ScannerService } from '../core/scanner.service';
 })
 export class DetailComponent {
   @ViewChild(FilesComponent) filesComponent: FilesComponent | undefined;
-  private dataService = inject(DataService);
-  private fileService = inject(FileService);
-  protected scannerMode = toSignal(
-    inject(ConfigService).applicationMode$.pipe(
-      map(x => x == ApplicationMode.Scanner)
-    )
+
+  private store = inject(Store);
+  protected scannerMode = this.store.selectSignal(ConfigState.isScannerMode);
+  protected article = this.store.selectSignal(ArticleState.getArticle);
+  protected articleNumber = this.store.selectSignal(ArticleState.getNumber);
+  protected articleNumberNotFound = this.store.selectSignal(
+    ArticleState.getArticleNotFound
   );
-  protected article = toSignal(this.dataService.files$);
-  protected bom = toSignal(this.dataService.fulllBom$);
+  protected bom = this.store.selectSignal(ArticleState.getBom);
   protected Tab = Tab;
   protected currentTab = signal(Tab.Bom);
-  protected currentFile = toSignal(this.fileService.currentFile$);
+  protected currentFile = this.store.selectSignal(ArticleState.getCurrentFile);
+
+  private router = inject(Router);
   private readonly scannerCommand = toSignal(inject(ScannerService).event$);
   private readonly scannerCommandEffect = effect(() => {
     const command = this.scannerCommand()?.command;
-    console.log(command);
     if (command == ScannerCommand.Back) {
-      console.log('navigation back');
       this.router.navigate(['..']);
       return;
     }
@@ -59,35 +66,22 @@ export class DetailComponent {
       return;
     }
   });
-  private readonly articleScanner = toSignal(inject(ScannerService).article$);
-  private readonly scannerEffect = effect(() => {
-    const article = this.articleScanner();
-    console.log(article);
-    if (article != null) {
-      this.handleSearch(article);
-    }
-  });
-  private readonly router = inject(Router);
+
   public handleSearch(article: string): void {
-    this.router.navigate([article]);
+    this.store.dispatch(new SetNumber(article));
   }
 
-  private articleChanges = effect(() => {
-    const article = this.article();
-    if (article == null) {
-      return;
-    }
-    this.fileService.setArticle({ number: article.number });
-  });
   protected setTab(tab: Tab): void {
     this.currentTab.set(tab);
   }
 
   protected fileSelected(file: FileSystem) {
-    this.fileService.setFile({ file: file, article: this.article()!.number! });
+    this.store.dispatch(
+      new LoadFile({ file: file, article: this.article()!.number! })
+    );
   }
 
-  protected bomSelected(bom: Bom) {
-    this.fileService.setArticle(bom);
+  protected bomSelected(bom: FullBom) {
+    this.store.dispatch(new LoadDefaultFile(bom.number!));
   }
 }

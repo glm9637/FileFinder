@@ -1,4 +1,4 @@
-<form (ngSubmit)="handleSearch()" class="search">
+<form (ngSubmit)="handleSearch()" class="search" >
   <input type="text" [formControl]="searchForm" class="input" />
   @if (searchForm.errors) {
     <button type="button" class="submit" (click)="reset()">

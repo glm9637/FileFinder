@@ -33,7 +33,6 @@ export class TreeComponent<T> {
   readonly selected = signal<TreeItem<T> | null>(null);
   readonly outputOnNonNode = input<boolean>(false);
   private readonly itemSetEffect = effect(() => {
-    console.log('item list set effect');
     if (this.itemList().length == 0) {
       return;
     }

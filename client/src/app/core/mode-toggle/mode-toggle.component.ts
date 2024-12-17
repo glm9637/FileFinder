@@ -1,6 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { ApplicationMode, ConfigService } from '../config.service';
 import { CommonModule } from '@angular/common';
+import { Store } from '@ngxs/store';
+import { ConfigState } from '../config/config.state';
+import { ApplicationMode } from '../config/config.enums';
+import { ToggleAppMode } from '../config/config.actions';
 
 @Component({
   selector: 'app-mode-toggle',
@@ -9,14 +12,10 @@ import { CommonModule } from '@angular/common';
   styleUrl: './mode-toggle.component.scss',
 })
 export class ModeToggleComponent {
-  private configService = inject(ConfigService);
-  public appMode$ = this.configService.applicationMode$;
+  private store = inject(Store);
+  public appMode = this.store.selectSignal(ConfigState.getAppMode);
   public AppMode = ApplicationMode;
-  public toggleMode(current: ApplicationMode) {
-    this.configService.setMode(
-      current == ApplicationMode.Keyboard
-        ? ApplicationMode.Scanner
-        : ApplicationMode.Keyboard
-    );
+  public toggleMode() {
+    this.store.dispatch(ToggleAppMode);
   }
 }
