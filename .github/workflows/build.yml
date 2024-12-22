@@ -27,19 +27,17 @@ jobs:
         run: |
           bash build.sh
           zip -r -q build.zip build
+      - name: Get commit message for the tag
+        id: commit_message
+        run: |
+          TAG_COMMIT_MESSAGE=$(git log -1 --format=%B)
+          echo "commit_message=$TAG_COMMIT_MESSAGE" >> $GITHUB_ENV
       - name: Create release
         id: create_release
-        uses: actions/create-release@v1
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: ${{ github.ref }} # Use the Git tag (e.g., v1.0.0)
-          release_name: "Release ${{ github.ref }}"
+          artifacts: "build.zip"
+          artifactContentType: "application/zip"
           body: "Release description"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload ZIP file
-        uses: softprops/action-gh-release@v2
-        with:
-          files: build.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
