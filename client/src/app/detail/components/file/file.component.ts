@@ -26,7 +26,6 @@ export class FileComponent {
   });
   public readonly hasError = signal(false);
   public onError(err: unknown) {
-    console.log(err);
     this.hasError.set(true);
   }
 }

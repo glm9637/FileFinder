@@ -1,21 +1,32 @@
-<app-topbar (searchTriggered)="handleSearch($event)" [value]="articleNumber() ?? ''" [disabled]="scannerMode()"></app-topbar>
+<app-topbar
+  (searchTriggered)="handleSearch($event)"
+  [value]="articleNumber() ?? ''"
+  [disabled]="scannerMode()"></app-topbar>
 <div class="body">
   <app-sidebar
     (selectionChanged)="setTab($event)"
     [enableBom]="scannerMode() === false"></app-sidebar>
+
   <div class="tree">
-    @if (
-      articleNumberNotFound()
-    ) {
+    <div class="data">
+      @if (articleNumberNotFound()) {
         <h3 class="err-txt">Artikel wurde nicht gefunden</h3>
-        <img class="err-img" src="no-result.svg" alt="Datei nicht gefunden">
-    }
-    @else if (currentTab() === Tab.Bom) {
-      <app-bom [bom]="bom()" (bomSelected)="bomSelected($event)"></app-bom>
-    } @else {
-      <app-files
-        [files]="article()?.files"
-        (fileSelected)="fileSelected($event)"></app-files>
+        <img class="err-img" src="no-result.svg" alt="Datei nicht gefunden" />
+      } @else if (currentTab() === Tab.Bom) {
+        <app-bom [bom]="bom()" (bomSelected)="bomSelected($event)"></app-bom>
+      } @else {
+        <app-files
+          [files]="article()?.files"
+          (fileSelected)="fileSelected($event)"></app-files>
+      }
+    </div>
+    @if (currentTab() === Tab.Folder) {
+      <div class="spacer"></div>
+      <label class="custom-file-upload">
+        Datei Hochladen
+        <div class="btn-icon">&nbsp;</div>
+        <input type="file" id="file-upload" (change)="uploadFile($event)" />
+      </label>
     }
   </div>
   <div class="content">

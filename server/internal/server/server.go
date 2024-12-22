@@ -16,6 +16,8 @@ func CreateServer(config config.Config) *http.Server {
 
 	// get an `http.Handler` that we can use
 	h := gen.HandlerFromMuxWithBaseURL(server, r, "/api")
+	fs := http.FileServer(http.Dir("./wwwroot/browser"))
+	r.Handle("/*", noCache(fs))
 
 	s := &http.Server{
 		Handler: h,
@@ -23,4 +25,12 @@ func CreateServer(config config.Config) *http.Server {
 	}
 
 	return s
+}
+
+func noCache(fs http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Add("Cache-Control", "no-cache")
+		fs.ServeHTTP(w, r)
+	}
 }

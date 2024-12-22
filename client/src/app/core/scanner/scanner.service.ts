@@ -40,7 +40,6 @@ export class ScannerService {
 
   public enableScanner() {
     this.currentInput = '';
-    console.log('enabling scanner');
     window.addEventListener('keydown', this.handleInput);
   }
 
@@ -51,7 +50,6 @@ export class ScannerService {
 
   private processInput(input: string) {
     if (input.endsWith(ScannerCommand.Next)) {
-      console.log(input);
       this.sendCommand(ScannerCommand.Next);
       return;
     }
@@ -64,7 +62,6 @@ export class ScannerService {
       return;
     }
     if (/^\d{7}$/.test(input)) {
-      console.log('article');
       this.articleSubject.next(this.currentInput);
       return;
     }

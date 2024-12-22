@@ -28,7 +28,6 @@ export class BomComponent {
   protected filteredTreeData = computed(() => {
     const full = this.treeData();
     let filter = this.filterValue()?.toLowerCase();
-    console.log(filter);
     if (filter == null || filter == '') {
       filter = '';
     }

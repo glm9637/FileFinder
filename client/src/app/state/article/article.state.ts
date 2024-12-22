@@ -128,7 +128,6 @@ export class ArticleState {
     }
     return this.apiService.getArticle({ number }).pipe(
       tap(x => {
-        console.log('hier');
         ctx.patchState({ article: x, numberNotFound: false });
       }),
       catchError(() => {

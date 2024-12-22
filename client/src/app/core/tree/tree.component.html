@@ -17,16 +17,23 @@
 </ng-template>
 
 <ng-template #itemTemplate let-data>
-  <button
-    (click)="itemClicked(data.item)"
-    class="entry"
-    [ngStyle]="{ 'margin-left': data.indent * 2 + 'rem' }"
-    [class.selected]="data.item === selected()">
-    @if (data.item.children) {
-      {{ data.item.expanded ? '▼' : '►' }}
-    }
-    {{ data.item.label }}
-  </button>
+  <div class="row">
+    <div [ngStyle]="{ 'min-width': data.indent * 2 + 'rem' }">&nbsp;</div>
+    <button
+      (click)="expandClicked(data.item)"
+      class="btn-expand"
+      [class.selected]="data.item === selected()">
+      @if (data.item.children) {
+        {{ data.item.expanded ? '▼' : '►' }}
+      }
+    </button>
+    <button
+      (click)="itemClicked(data.item)"
+      class="entry"
+      [class.selected]="data.item === selected()">
+      {{ data.item.label }}
+    </button>
+  </div>
   @if (data.item.expanded) {
     <ng-container
       [ngTemplateOutlet]="listTemplate"

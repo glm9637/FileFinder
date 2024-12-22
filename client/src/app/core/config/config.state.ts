@@ -4,6 +4,7 @@ import { SetAppMode, ToggleAppMode, WatchDisplaySize } from './config.actions';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { tap } from 'rxjs';
 import { ApplicationMode } from './config.enums';
+import { ScannerService } from '../scanner/scanner.service';
 
 export interface ConfigStateModel {
   mode: ApplicationMode;
@@ -22,9 +23,15 @@ const MODE_KEY = 'Config:ApplicationMode';
 })
 @Injectable()
 export class ConfigState {
+  private scannerService = inject(ScannerService);
   private setMode(ctx: StateContext<ConfigStateModel>, mode: ApplicationMode) {
     window.localStorage.setItem(PREV_MODE_KEY, ctx.getState().mode);
     window.localStorage.setItem(MODE_KEY, mode);
+    if (mode === ApplicationMode.Scanner) {
+      this.scannerService.enableScanner();
+    } else {
+      this.scannerService.disableScanner();
+    }
     ctx.patchState({ mode: mode });
   }
 
@@ -44,9 +51,15 @@ export class ConfigState {
             this.setMode(ctx, ApplicationMode.Mobile);
             return;
           }
-          if (breakpoint.matches) {
+          if (
+            breakpoint.matches ||
+            (window.localStorage.getItem(
+              MODE_KEY
+            ) as ApplicationMode | null) !== ApplicationMode.Mobile
+          ) {
             return;
           }
+
           this.setMode(
             ctx,
             (window.localStorage.getItem(

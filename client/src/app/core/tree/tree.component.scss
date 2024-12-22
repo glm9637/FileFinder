@@ -11,6 +11,22 @@
   }
 }
 
+.btn-expand {
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0 8px;
+  display: block;
+  width: auto;
+  text-align: left;
+
+  &:hover {
+    background-color: rgba($color: #fff, $alpha: 0.3);
+  }
+}
 .selected {
   background-color: var(--tertiary);
+}
+
+.row {
+  display: flex;
 }

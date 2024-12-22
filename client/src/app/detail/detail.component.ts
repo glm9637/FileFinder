@@ -21,6 +21,7 @@ import {
 } from '../state/article/article.actions';
 import { FullBom } from '../api/models';
 import { Router } from '@angular/router';
+import { ApiService } from '../api/services';
 
 @Component({
   selector: 'app-detail',
@@ -37,6 +38,7 @@ import { Router } from '@angular/router';
 export class DetailComponent {
   @ViewChild(FilesComponent) filesComponent: FilesComponent | undefined;
 
+  private apiService = inject(ApiService);
   private store = inject(Store);
   protected scannerMode = this.store.selectSignal(ConfigState.isScannerMode);
   protected article = this.store.selectSignal(ArticleState.getArticle);
@@ -83,5 +85,25 @@ export class DetailComponent {
 
   protected bomSelected(bom: FullBom) {
     this.store.dispatch(new LoadDefaultFile(bom.number!));
+  }
+
+  protected async uploadFile(event: Event) {
+    const element = event.target as HTMLInputElement | null;
+    const files = element?.files;
+    const articleNumber = this.articleNumber();
+    if (files == null || files.length == 0 || articleNumber == null) {
+      return;
+    }
+    const file = files[0];
+
+    console.log(articleNumber);
+    this.apiService
+      .uploadFile({
+        number: articleNumber,
+        body: {
+          photo: file,
+        },
+      })
+      .subscribe();
   }
 }
