@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { State, Action, Selector, StateContext } from '@ngxs/store';
 import { SetAppMode, ToggleAppMode, WatchDisplaySize } from './config.actions';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { tap } from 'rxjs';
 import { ApplicationMode } from './config.enums';
 import { ScannerService } from '../scanner/scanner.service';
@@ -43,7 +43,7 @@ export class ConfigState {
   @Action(WatchDisplaySize)
   watchAppMode(ctx: StateContext<ConfigStateModel>) {
     return inject(BreakpointObserver)
-      .observe(Breakpoints.HandsetPortrait)
+      .observe('(max-width: 700px)')
       .pipe(
         tap(breakpoint => {
           const state = ctx.getState();
@@ -88,5 +88,10 @@ export class ConfigState {
   @Selector()
   static isScannerMode(state: ConfigStateModel) {
     return state.mode == ApplicationMode.Scanner;
+  }
+
+  @Selector()
+  static isMobileMode(state: ConfigStateModel) {
+    return state.mode == ApplicationMode.Mobile;
   }
 }

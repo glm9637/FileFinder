@@ -12,6 +12,8 @@ import { FullBom } from '../../../api/models/full-bom';
 export class FilesComponent {
   @ViewChild(TreeComponent) tree: TreeComponent<FullBom> | undefined;
   public files = input<FileSystem[]>();
+  readonly selectFirst = input<boolean>(true);
+
   public fileSelected = output<FileSystem>();
 
   protected treeData = computed(() => {

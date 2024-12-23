@@ -14,6 +14,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 })
 export class BomComponent {
   public bom = input<FullBom | null>();
+  readonly selectFirst = input<boolean>(true);
+
   public bomSelected = output<FullBom>();
   protected filter = new FormBuilder().nonNullable.control('');
   private filterValue = toSignal(this.filter.valueChanges);

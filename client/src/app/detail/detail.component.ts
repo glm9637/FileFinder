@@ -1,4 +1,11 @@
-import { Component, effect, inject, signal, ViewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { BomComponent } from './components/bom/bom.component';
 import { FileComponent } from './components/file/file.component';
 import { FilesComponent } from './components/files/files.component';
@@ -37,10 +44,17 @@ import { ApiService } from '../api/services';
 })
 export class DetailComponent {
   @ViewChild(FilesComponent) filesComponent: FilesComponent | undefined;
-
+  private showContentOnMobile = signal(false);
+  protected showContent = computed(() => {
+    if (!this.mobileMode()) {
+      return true;
+    }
+    return this.showContentOnMobile();
+  });
   private apiService = inject(ApiService);
   private store = inject(Store);
   protected scannerMode = this.store.selectSignal(ConfigState.isScannerMode);
+  protected mobileMode = this.store.selectSignal(ConfigState.isMobileMode);
   protected article = this.store.selectSignal(ArticleState.getArticle);
   protected articleNumber = this.store.selectSignal(ArticleState.getNumber);
   protected articleNumberNotFound = this.store.selectSignal(
@@ -78,13 +92,26 @@ export class DetailComponent {
   }
 
   protected fileSelected(file: FileSystem) {
+    console.log('hfileier');
     this.store.dispatch(
       new LoadFile({ file: file, article: this.article()!.number! })
     );
+    this.showContentOnMobile.set(true);
   }
 
   protected bomSelected(bom: FullBom) {
+    console.log('bom');
     this.store.dispatch(new LoadDefaultFile(bom.number!));
+
+    this.showContentOnMobile.set(true);
+  }
+
+  protected displayContent() {
+    this.showContentOnMobile.set(true);
+  }
+
+  protected hideContent() {
+    this.showContentOnMobile.set(false);
   }
 
   protected async uploadFile(event: Event) {
@@ -96,7 +123,6 @@ export class DetailComponent {
     }
     const file = files[0];
 
-    console.log(articleNumber);
     this.apiService
       .uploadFile({
         number: articleNumber,

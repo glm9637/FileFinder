@@ -32,21 +32,16 @@ export class TreeComponent<T> {
   readonly itemSelected = output<T>();
   readonly selected = signal<TreeItem<T> | null>(null);
   readonly outputOnNonNode = input<boolean>(false);
+  readonly selectFirst = input<boolean>(true);
   private readonly itemSetEffect = effect(() => {
     const itemList = this.itemList();
     if (itemList.length == 0) {
       return;
     }
-    this.itemClicked(itemList[0]);
-    itemList[0].expanded = true;
-  });
-
-  private readonly itemSelectedEffect = effect(() => {
-    const item = this.selected();
-    if (item == null) {
-      return;
+    if (this.selectFirst()) {
+      this.itemClicked(itemList[0]);
     }
-    this.itemSelected.emit(item.item);
+    itemList[0].expanded = true;
   });
 
   public selectNext() {
@@ -103,6 +98,8 @@ export class TreeComponent<T> {
   protected itemClicked(item: TreeItem<T>): void {
     if (item.children == null || this.outputOnNonNode()) {
       this.selected.set(item);
+
+      this.itemSelected.emit(item.item);
     }
   }
 

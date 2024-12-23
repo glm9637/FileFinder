@@ -13,11 +13,12 @@
         <h3 class="err-txt">Artikel wurde nicht gefunden</h3>
         <img class="err-img" src="no-result.svg" alt="Datei nicht gefunden" />
       } @else if (currentTab() === Tab.Bom) {
-        <app-bom [bom]="bom()" (bomSelected)="bomSelected($event)"></app-bom>
+        <app-bom [bom]="bom()" (bomSelected)="bomSelected($event)" [selectFirst]="!mobileMode()"></app-bom>
       } @else {
         <app-files
           [files]="article()?.files"
-          (fileSelected)="fileSelected($event)"></app-files>
+          (fileSelected)="fileSelected($event)"
+          [selectFirst]="!mobileMode()"></app-files>
       }
     </div>
     @if (currentTab() === Tab.Folder) {
@@ -29,7 +30,14 @@
       </label>
     }
   </div>
+  @if (showContent()) {
   <div class="content">
+    @if (mobileMode()){
+      <div class="topbar">
+        <button (click)="hideContent()" class="close-content"><img src="icons/cancel.svg" alt=""></button>
+      </div>
+    }
     <app-file [fileUrl]="currentFile()"></app-file>
   </div>
+}
 </div>
