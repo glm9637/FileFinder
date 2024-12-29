@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { State, Action, Selector, StateContext } from '@ngxs/store';
+import { State, Action, Selector, StateContext, NgxsOnInit } from '@ngxs/store';
 import { SetAppMode, ToggleAppMode, WatchDisplaySize } from './config.actions';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { tap } from 'rxjs';
@@ -22,7 +22,7 @@ const MODE_KEY = 'Config:ApplicationMode';
   },
 })
 @Injectable()
-export class ConfigState {
+export class ConfigState implements NgxsOnInit {
   private scannerService = inject(ScannerService);
   private setMode(ctx: StateContext<ConfigStateModel>, mode: ApplicationMode) {
     window.localStorage.setItem(PREV_MODE_KEY, ctx.getState().mode);
@@ -33,6 +33,13 @@ export class ConfigState {
       this.scannerService.disableScanner();
     }
     ctx.patchState({ mode: mode });
+  }
+
+  ngxsOnInit(ctx: StateContext<ConfigStateModel>): void {
+    if (ctx.getState().mode == ApplicationMode.Scanner) {
+      this.scannerService.enableScanner();
+    }
+    ctx.dispatch(new WatchDisplaySize());
   }
 
   @Action(SetAppMode)

@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
-import { FullBom } from '../../../api/models/full-bom';
-import { TreeComponent, TreeItem } from '../../../core/tree/tree.component';
 import { Bom } from '../../../api/models/bom';
+import { TreeComponent, TreeItem } from '../../../core/tree/tree.component';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -13,10 +12,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
   styleUrl: './bom.component.scss',
 })
 export class BomComponent {
-  public bom = input<FullBom | null>();
+  public bom = input<Bom | null>();
   readonly selectFirst = input<boolean>(true);
+  public bomLoading = input.required<boolean>();
 
-  public bomSelected = output<FullBom>();
+  public bomSelected = output<Bom>();
   protected filter = new FormBuilder().nonNullable.control('');
   private filterValue = toSignal(this.filter.valueChanges);
   protected treeData = computed(() => {
@@ -43,7 +43,7 @@ export class BomComponent {
     return result;
   });
 
-  private filterTreeItem(item: TreeItem<FullBom>, search: string): boolean {
+  private filterTreeItem(item: TreeItem<Bom>, search: string): boolean {
     let result = false;
     const filterItem = item.item;
     if (
@@ -63,9 +63,9 @@ export class BomComponent {
     return result;
   }
 
-  private mapToTreeItem(item: FullBom, expanded = false): TreeItem<FullBom> {
+  private mapToTreeItem(item: Bom, expanded = false): TreeItem<Bom> {
     return {
-      label: `${item.number} ${item.name ?? ''}`,
+      label: `[${item.index}] ${item.number} ${item.name ?? ''}`,
       item: item,
       expanded,
       children:

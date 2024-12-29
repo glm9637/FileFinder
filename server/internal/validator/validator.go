@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"slices"
+	"strings"
 
 	"musenova.de/filefinder/internal/config"
 )
@@ -18,7 +19,7 @@ func IsAllowedFile(config config.AppConfig, file fs.DirEntry) bool {
 	if file.IsDir() {
 		return false
 	}
-	extension := filepath.Ext(file.Name())
+	extension := strings.ToLower(filepath.Ext(file.Name()))
 	log.Printf("%v is allowed: %v", extension[1:], slices.Contains(config.Files, extension[:1]))
 	return slices.Contains(config.Files, extension[1:])
 }

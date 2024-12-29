@@ -13,7 +13,6 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 import { Article } from '../models/article';
 import { Bom } from '../models/bom';
-import { FullBom } from '../models/full-bom';
 import { getArticle } from '../fn/operations/get-article';
 import { GetArticle$Params } from '../fn/operations/get-article';
 import { getArticleFile } from '../fn/operations/get-article-file';
@@ -22,8 +21,6 @@ import { getBom } from '../fn/operations/get-bom';
 import { GetBom$Params } from '../fn/operations/get-bom';
 import { getFile } from '../fn/operations/get-file';
 import { GetFile$Params } from '../fn/operations/get-file';
-import { getFullBom } from '../fn/operations/get-full-bom';
-import { GetFullBom$Params } from '../fn/operations/get-full-bom';
 import { uploadFile } from '../fn/operations/upload-file';
 import { UploadFile$Params } from '../fn/operations/upload-file';
 
@@ -96,39 +93,6 @@ export class ApiService extends BaseService {
   getBom(params: GetBom$Params, context?: HttpContext): Observable<Bom> {
     return this.getBom$Response(params, context).pipe(
       map((r: StrictHttpResponse<Bom>): Bom => r.body)
-    );
-  }
-
-  /** Path part for operation `getFullBom()` */
-  static readonly GetFullBomPath = '/article/{number}/bom/full';
-
-  /**
-   * get the full bom of the article.
-   *
-   *
-   *
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getFullBom()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getFullBom$Response(params: GetFullBom$Params, context?: HttpContext): Observable<StrictHttpResponse<FullBom>> {
-    return getFullBom(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * get the full bom of the article.
-   *
-   *
-   *
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getFullBom$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getFullBom(params: GetFullBom$Params, context?: HttpContext): Observable<FullBom> {
-    return this.getFullBom$Response(params, context).pipe(
-      map((r: StrictHttpResponse<FullBom>): FullBom => r.body)
     );
   }
 

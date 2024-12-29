@@ -21,7 +21,9 @@ export class SidebarComponent {
   });
   public enableBom = input.required<boolean>();
   private enabelBomChanged = effect(() => {
-    this.selection.set(Tab.Folder);
+    if (!this.enableBom()) {
+      this.selection.set(Tab.Folder);
+    }
   });
 
   public setBom() {

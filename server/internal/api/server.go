@@ -39,7 +39,7 @@ func (s Server) GetArticleFile(w http.ResponseWriter, r *http.Request, number st
 
 }
 
-func writeNotFound(w http.ResponseWriter, r *http.Request) {
+func writeNotFound(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 	w.Write([]byte(`
 	<!DOCTYPE html>
@@ -72,15 +72,6 @@ func (s Server) GetArticle(w http.ResponseWriter, r *http.Request, number string
 // GetBom implements ServerInterface.
 func (s Server) GetBom(w http.ResponseWriter, r *http.Request, number string) {
 	response, err := bom.GetBom(s.config.App, number)
-	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-	}
-	_ = json.NewEncoder(w).Encode(response)
-}
-
-// GetFullBom implements ServerInterface.
-func (s Server) GetFullBom(w http.ResponseWriter, r *http.Request, number string) {
-	response, err := bom.GetFullBom(s.config.App, number)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 	}

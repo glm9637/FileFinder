@@ -1,9 +1,7 @@
-
-  <button (click)="toggleMode()">
-    @if (appMode() === AppMode.Scanner) {
-      <img src="keyboard.svg" alt="Keyboard Toggle" />
-    } @else if (appMode() === AppMode.Keyboard) {
-      <img src="scan.svg" alt="Scan Toggle" />
-    }
-  </button>
-
+<button (click)="toggleMode()">
+  @if (appMode() === AppMode.Scanner) {
+    <img src="icons/keyboard.svg" alt="Keyboard Toggle" />
+  } @else if (appMode() === AppMode.Keyboard) {
+    <img src="icons/bar-code.svg" alt="Scan Toggle" />
+  }
+</button>

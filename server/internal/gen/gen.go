@@ -28,12 +28,18 @@ type Article struct {
 	Number *string `json:"number,omitempty"`
 }
 
-// BOM defines model for BOM.
-type BOM struct {
-	Materials *[]Material `json:"materials,omitempty"`
+// Bom defines model for Bom.
+type Bom struct {
+	Children *[]Bom `json:"children,omitempty"`
+
+	// Index the index of the article
+	Index *string `json:"index,omitempty"`
 
 	// Name the name of the article
 	Name *string `json:"name,omitempty"`
+
+	// Number the article number
+	Number *string `json:"number,omitempty"`
 }
 
 // FileSystem defines model for FileSystem.
@@ -51,32 +57,12 @@ type FileSystem struct {
 // FileSystemType defines model for FileSystem.Type.
 type FileSystemType string
 
-// FullBom defines model for FullBom.
-type FullBom struct {
-	Children *[]FullBom `json:"children,omitempty"`
-
-	// Name the name of the article
-	Name *string `json:"name,omitempty"`
-
-	// Number the article number
-	Number *string `json:"number,omitempty"`
-}
-
-// Material defines model for Material.
-type Material struct {
-	// Name the name of the article
-	Name *string `json:"name,omitempty"`
-
-	// Number the article number
-	Number *string `json:"number,omitempty"`
-}
-
 // UploadFileMultipartBody defines parameters for UploadFile.
 type UploadFileMultipartBody struct {
 	Photo *openapi_types.File `json:"photo,omitempty"`
 }
 
-// UploadFileMultipartRequestBody defines body for UploadFile for multipart/form-data" ContentType.
+// UploadFileMultipartRequestBody defines body for UploadFile for multipart/form-data ContentType.
 type UploadFileMultipartRequestBody UploadFileMultipartBody
 
 // ServerInterface represents all server handlers.
@@ -87,9 +73,6 @@ type ServerInterface interface {
 	// get a bom of the article
 	// (GET /article/{number}/bom)
 	GetBom(w http.ResponseWriter, r *http.Request, number string)
-	// get the full bom of the article
-	// (GET /article/{number}/bom/full)
-	GetFullBom(w http.ResponseWriter, r *http.Request, number string)
 	// get the default file for the article
 	// (GET /article/{number}/file)
 	GetArticleFile(w http.ResponseWriter, r *http.Request, number string)
@@ -151,31 +134,6 @@ func (siw *ServerInterfaceWrapper) GetBom(w http.ResponseWriter, r *http.Request
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetBom(w, r, number)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetFullBom operation middleware
-func (siw *ServerInterfaceWrapper) GetFullBom(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "number" -------------
-	var number string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "number", r.PathValue("number"), &number, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: false})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "number", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetFullBom(w, r, number)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -391,7 +349,6 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 
 	m.HandleFunc("GET "+options.BaseURL+"/article/{number}", wrapper.GetArticle)
 	m.HandleFunc("GET "+options.BaseURL+"/article/{number}/bom", wrapper.GetBom)
-	m.HandleFunc("GET "+options.BaseURL+"/article/{number}/bom/full", wrapper.GetFullBom)
 	m.HandleFunc("GET "+options.BaseURL+"/article/{number}/file", wrapper.GetArticleFile)
 	m.HandleFunc("POST "+options.BaseURL+"/article/{number}/file", wrapper.UploadFile)
 	m.HandleFunc("GET "+options.BaseURL+"/article/{number}/file/{path}", wrapper.GetFile)

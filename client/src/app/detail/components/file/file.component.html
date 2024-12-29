@@ -1,11 +1,35 @@
-
-@if(hasError()){
+@if (hasError()) {
   <h3 class="err-txt">Datei konnte nicht gefunden werden</h3>
-  <img class="err-img" src="no-result.svg" alt="Datei nicht gefunden">
+  <img class="err-img" src="no-result.svg" alt="Datei nicht gefunden" />
 }
 
-
 @if (url(); as url) {
-  <pdf-viewer class="file" [src]="url" [render-text]="true" [autoresize]="true" [original-size]="true" [fit-to-page]="true"
-  (error)="onError($event)"></pdf-viewer>
+  @switch (fileType()) {
+    @case ('image') {
+      <img class="file-image" src="{{ url }}" alt="Datei" />
+    }
+    @case ('pdf') {
+      <pdf-viewer
+        class="file"
+        [src]="url"
+        [render-text]="true"
+        [autoresize]="true"
+        [original-size]="true"
+        [fit-to-page]="true"
+        [zoom]="zoom()"
+        (error)="onError()"></pdf-viewer>
+
+      <div class="controls">
+        <button class="btn-control" (click)="zoomIn()">
+          <img src="icons/zoom-in.svg" alt="Zoom in" />
+        </button>
+        <button class="btn-control" (click)="zoomOut()">
+          <img src="icons/zoom-out.svg" alt="Zoom out" />
+        </button>
+      </div>
+    }
+    @case ('text') {
+      <div class="text">{{ textContent$ | async }}</div>
+    }
+  }
 }

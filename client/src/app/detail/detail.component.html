@@ -13,7 +13,8 @@
         <h3 class="err-txt">Artikel wurde nicht gefunden</h3>
         <img class="err-img" src="no-result.svg" alt="Datei nicht gefunden" />
       } @else if (currentTab() === Tab.Bom) {
-        <app-bom [bom]="bom()" (bomSelected)="bomSelected($event)" [selectFirst]="!mobileMode()"></app-bom>
+        <app-bom [bom]="bom()" (bomSelected)="bomSelected($event)" [selectFirst]="!mobileMode()"
+        [bomLoading]="bomLoading()"></app-bom>
       } @else {
         <app-files
           [files]="article()?.files"

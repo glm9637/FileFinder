@@ -4,8 +4,13 @@
   [formControl]="filter"
   placeholder="Artikel Filtern" />
 
-<app-tree
-  [items]="filteredTreeData()"
-  (itemSelected)="itemSelected($event)"
-  [outputOnNonNode]="true"
-  [selectFirst]="selectFirst()"></app-tree>
+  @if (bomLoading()) {
+    Daten werden geladen...
+  }@else{
+    <app-tree
+    [items]="filteredTreeData()"
+    (itemSelected)="itemSelected($event)"
+    [outputOnNonNode]="true"
+    [selectFirst]="selectFirst()"></app-tree>
+  }
+

@@ -1,7 +1,7 @@
 import { Component, computed, input, output, ViewChild } from '@angular/core';
 import { FileSystem } from '../../../api/models/file-system';
 import { TreeComponent, TreeItem } from '../../../core/tree/tree.component';
-import { FullBom } from '../../../api/models/full-bom';
+import { Bom } from '../../../api/models/bom';
 
 @Component({
   selector: 'app-files',
@@ -10,7 +10,7 @@ import { FullBom } from '../../../api/models/full-bom';
   styleUrl: './files.component.scss',
 })
 export class FilesComponent {
-  @ViewChild(TreeComponent) tree: TreeComponent<FullBom> | undefined;
+  @ViewChild(TreeComponent) tree: TreeComponent<Bom> | undefined;
   public files = input<FileSystem[]>();
   readonly selectFirst = input<boolean>(true);
 

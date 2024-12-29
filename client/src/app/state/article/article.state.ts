@@ -6,6 +6,7 @@ import {
   StateContext,
   Actions,
   ofActionSuccessful,
+  NgxsOnInit,
 } from '@ngxs/store';
 import {
   ConnectRouter,
@@ -21,11 +22,13 @@ import { catchError, map, of, tap } from 'rxjs';
 import { Navigate, RouterDataResolved } from '@ngxs/router-plugin';
 import { RouterStateSnapshot } from '@angular/router';
 import { ApiService } from '../../api/services';
-import { Article, FullBom } from '../../api/models';
+import { Bom } from '../../api/models/bom';
+import { Article } from '../../api/models/article';
 
 export interface ArticleStateModel {
   number: string | null;
-  bom: FullBom | null;
+  bom: Bom | null;
+  bomLoading: boolean;
   article: Article | null;
   currentFile: URL | null;
   numberNotFound: boolean;
@@ -39,11 +42,16 @@ export interface ArticleStateModel {
     article: null,
     currentFile: null,
     numberNotFound: true,
+    bomLoading: false,
   },
 })
 @Injectable()
-export class ArticleState {
+export class ArticleState implements NgxsOnInit {
   private readonly apiService = inject(ApiService);
+
+  ngxsOnInit(ctx: StateContext<ArticleStateModel>): void {
+    ctx.dispatch([new ConnectRouter(), new ConnectScanner()]);
+  }
   @Selector()
   static getNumber(state: ArticleStateModel) {
     return state.number;
@@ -52,6 +60,11 @@ export class ArticleState {
   @Selector()
   static getBom(state: ArticleStateModel) {
     return state.bom;
+  }
+
+  @Selector()
+  static getBomLoading(state: ArticleStateModel) {
+    return state.bomLoading;
   }
 
   @Selector()
@@ -109,13 +122,14 @@ export class ArticleState {
 
   @Action(LoadBom)
   loadBom(ctx: StateContext<ArticleStateModel>) {
+    ctx.patchState({ bomLoading: true });
     const number = ctx.getState().number;
     if (number == null) {
       return;
     }
-    return this.apiService.getFullBom({ number }).pipe(
+    return this.apiService.getBom({ number }).pipe(
       tap(x => {
-        ctx.patchState({ bom: x });
+        ctx.patchState({ bom: x, bomLoading: false });
       })
     );
   }

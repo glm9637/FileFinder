@@ -9,7 +9,6 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
@@ -115,11 +114,18 @@ func GetUploadFolder(config config.AppConfig, article string, filename string) (
 	return destinationPath, nil
 }
 
-func GetFilePath(config config.AppConfig, number string) (string, error) {
-	path := filepath.Join(config.Path)
-	for _, v := range regexp.MustCompile("(^.|..)").FindAllString(number, -1) {
-		path = filepath.Join(path, v)
+func GetFilePathWithSubstring(config config.AppConfig, number string, subpath string) (string, error) {
+	path := filepath.Join(config.Path, number[:1], number[1:3], number[3:5], number[5:7], subpath)
+	if !exists(path) {
+		return "", fmt.Errorf("path %v does not exist or can't be accessed", path)
 	}
+
+	return path, nil
+}
+
+func GetFilePath(config config.AppConfig, number string) (string, error) {
+
+	path := filepath.Join(config.Path, number[:1], number[1:3], number[3:5], number[5:7])
 	if !exists(path) {
 		return "", fmt.Errorf("path %v does not exist or can't be accessed", path)
 	}

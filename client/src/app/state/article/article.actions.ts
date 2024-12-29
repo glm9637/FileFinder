@@ -30,5 +30,3 @@ export class LoadDefaultFile {
   static readonly type = '[Article] LoadDefault';
   constructor(readonly articleNumber: string) {}
 }
-
-export const ArticleInitActions = [ConnectScanner, ConnectRouter];

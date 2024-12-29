@@ -26,7 +26,7 @@ import {
   LoadFile,
   SetNumber,
 } from '../state/article/article.actions';
-import { FullBom } from '../api/models';
+import { Bom } from '../api/models/bom';
 import { Router } from '@angular/router';
 import { ApiService } from '../api/services';
 
@@ -60,6 +60,7 @@ export class DetailComponent {
   protected articleNumberNotFound = this.store.selectSignal(
     ArticleState.getArticleNotFound
   );
+  protected bomLoading = this.store.selectSignal(ArticleState.getBomLoading);
   protected bom = this.store.selectSignal(ArticleState.getBom);
   protected Tab = Tab;
   protected currentTab = signal(Tab.Bom);
@@ -92,14 +93,13 @@ export class DetailComponent {
   }
 
   protected fileSelected(file: FileSystem) {
-    console.log('hfileier');
     this.store.dispatch(
       new LoadFile({ file: file, article: this.article()!.number! })
     );
     this.showContentOnMobile.set(true);
   }
 
-  protected bomSelected(bom: FullBom) {
+  protected bomSelected(bom: Bom) {
     console.log('bom');
     this.store.dispatch(new LoadDefaultFile(bom.number!));
 

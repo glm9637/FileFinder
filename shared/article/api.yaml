@@ -42,29 +42,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BOM"
+                $ref: "#/components/schemas/Bom"
         404:
           description: the Article was not found
-  "/article/{number}/bom/full":
-    get:
-      security: []
-      summary: get the full bom of the article
-      operationId: "getFullBom"
-      parameters:
-        - name: number
-          in: path
-          description: the number of the article
-          schema:
-            type: string
-      responses:
-        200:
-          description: the full BOM of the article
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FullBom"
-        404:
-          description: the article was not found
   "/article/{number}/file":
     post:
       security: []
@@ -173,28 +153,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FileSystem"
-    BOM:
+    Bom:
       type: object
       properties:
-        name:
+        index:
           type: string
-          description: the name of the article
-        materials:
-          type: array
-          items:
-            $ref: "#/components/schemas/Material"
-    Material:
-      type: object
-      properties:
-        number:
-          type: string
-          description: the article number
-        name:
-          type: string
-          description: the name of the article
-    FullBom:
-      type: object
-      properties:
+          description: the index of the article
         number:
           type: string
           description: the article number
@@ -204,4 +168,4 @@ components:
         children:
           type: array
           items:
-            $ref: "#/components/schemas/FullBom"
+            $ref: "#/components/schemas/Bom"

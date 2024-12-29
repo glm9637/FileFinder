@@ -1,13 +1,26 @@
-import { Component, computed, effect, input, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { FileSystem } from '../../../api/models/file-system';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { HttpClient } from '@angular/common/http';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { filter, switchMap } from 'rxjs';
+import { CommonModule } from '@angular/common';
 export interface ArticleFile {
   article: string;
   file: FileSystem;
 }
+
+export type FileType = 'pdf' | 'image' | 'text' | 'other';
 @Component({
   selector: 'app-file',
-  imports: [PdfViewerModule],
+  imports: [PdfViewerModule, CommonModule],
   templateUrl: './file.component.html',
   styleUrl: './file.component.scss',
 })
@@ -17,6 +30,33 @@ export class FileComponent {
     const _ = this.fileUrl(); // eslint-disable-line
     this.hasError.set(false);
   });
+  private http = inject(HttpClient);
+  protected readonly fileType = computed(() => {
+    const extension = this.fileUrl()?.pathname.split('.').pop();
+    if (extension == null) {
+      return 'other';
+    }
+    if (['pdf'].includes(extension)) {
+      return extension;
+    }
+    if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
+      return 'image';
+    }
+    if (['txt'].includes(extension)) {
+      return 'text';
+    }
+    return 'other';
+  });
+  private fileUrl$ = toObservable(this.fileUrl);
+
+  protected readonly textContent$ = toObservable(this.fileType).pipe(
+    filter(type => type === 'text'),
+    switchMap(() => this.fileUrl$),
+    filter(url => url != null),
+    switchMap(url => this.http.get(url.href, { responseType: 'text' }))
+  );
+
+  protected readonly zoom = signal(1);
   protected readonly url = computed(() => {
     const url = this.fileUrl();
     if (url == null) {
@@ -24,8 +64,17 @@ export class FileComponent {
     }
     return url.href;
   });
+
   public readonly hasError = signal(false);
-  public onError(err: unknown) {
+  public onError() {
     this.hasError.set(true);
+  }
+
+  protected zoomIn() {
+    this.zoom.update(zoom => zoom + 0.5);
+  }
+
+  protected zoomOut() {
+    this.zoom.update(zoom => zoom - 0.5);
   }
 }
