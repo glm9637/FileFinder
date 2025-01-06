@@ -27,15 +27,16 @@ export type FileType = 'pdf' | 'image' | 'text' | 'other';
 export class FileComponent {
   public readonly fileUrl = input<URL | null>();
   private readonly fileUrlSet = effect(() => {
-    const _ = this.fileUrl(); // eslint-disable-line
+    const _ = this.fileUrl(); // eslint-disable-line @typescript-eslint/no-unused-vars
     this.hasError.set(false);
   });
   private http = inject(HttpClient);
   protected readonly fileType = computed(() => {
-    const extension = this.fileUrl()?.pathname.split('.').pop();
-    if (extension == null) {
-      return 'other';
+    const parts = this.fileUrl()?.pathname.split('.');
+    if (parts == null || parts?.length === 1) {
+      return 'pdf';
     }
+    const extension = parts.pop()!;
     if (['pdf'].includes(extension)) {
       return extension;
     }
@@ -71,10 +72,10 @@ export class FileComponent {
   }
 
   protected zoomIn() {
-    this.zoom.update(zoom => zoom + 0.5);
+    this.zoom.update(zoom => zoom + 0.3);
   }
 
   protected zoomOut() {
-    this.zoom.update(zoom => zoom - 0.5);
+    this.zoom.update(zoom => zoom - 0.3);
   }
 }

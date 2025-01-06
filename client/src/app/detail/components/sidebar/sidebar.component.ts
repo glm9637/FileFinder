@@ -14,7 +14,7 @@ export enum Tab {
 })
 export class SidebarComponent {
   public Selection = Tab;
-  protected selection = signal(Tab.Bom);
+  protected selection = signal(Tab.Folder);
   public selectionChanged = output<Tab>();
   private selectionChangedEffect = effect(() => {
     this.selectionChanged.emit(this.selection());

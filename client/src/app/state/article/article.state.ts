@@ -170,6 +170,7 @@ export class ArticleState implements NgxsOnInit {
   ) {
     const fullPath = `/api/article/${articleNumber}/file`;
     const url = URL.parse(fullPath, window.location.origin);
+    console.log(url);
     ctx.patchState({ currentFile: url });
   }
 }

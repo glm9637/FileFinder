@@ -63,7 +63,7 @@ export class DetailComponent {
   protected bomLoading = this.store.selectSignal(ArticleState.getBomLoading);
   protected bom = this.store.selectSignal(ArticleState.getBom);
   protected Tab = Tab;
-  protected currentTab = signal(Tab.Bom);
+  protected currentTab = signal(Tab.Folder);
   protected currentFile = this.store.selectSignal(ArticleState.getCurrentFile);
 
   private router = inject(Router);
@@ -100,7 +100,6 @@ export class DetailComponent {
   }
 
   protected bomSelected(bom: Bom) {
-    console.log('bom');
     this.store.dispatch(new LoadDefaultFile(bom.number!));
 
     this.showContentOnMobile.set(true);

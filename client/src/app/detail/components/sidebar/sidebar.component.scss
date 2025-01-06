@@ -15,7 +15,7 @@
   cursor: pointer;
   margin: 1rem auto;
   width: 100%;
-  height: 64px;
+  height: 48px;
 
   .icon {
     padding: 8px;
@@ -25,6 +25,20 @@
 .disabled {
   opacity: 0.2;
   cursor: default;
+}
+
+button {
+  display: flex;
+  &::before {
+    content: '';
+    background-color: transparent;
+    height: inherit;
+    width: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    position: fixed;
+    margin-left: -6px;
+  }
 }
 
 .active {

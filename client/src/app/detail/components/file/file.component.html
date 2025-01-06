@@ -2,7 +2,6 @@
   <h3 class="err-txt">Datei konnte nicht gefunden werden</h3>
   <img class="err-img" src="no-result.svg" alt="Datei nicht gefunden" />
 }
-
 @if (url(); as url) {
   @switch (fileType()) {
     @case ('image') {
@@ -30,6 +29,13 @@
     }
     @case ('text') {
       <div class="text">{{ textContent$ | async }}</div>
+    }
+    @default {
+      <h3 class="err-txt">Dateityp wird nicht unterstützt</h3>
+      <img
+        class="err-img"
+        src="no-result.svg"
+        alt="Dateityp wird nicht unterstützt" />
     }
   }
 }

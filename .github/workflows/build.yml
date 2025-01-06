@@ -26,6 +26,8 @@ jobs:
         run: |
           bash build.sh
           zip -r -q build.zip build
+      - name: Copy the client setup
+        run: cp -r ./client-setup build/client-setup
       - name: Get commit message for the tag
         id: commit_message
         run: |
