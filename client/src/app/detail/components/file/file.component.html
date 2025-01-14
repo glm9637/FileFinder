@@ -16,7 +16,7 @@
         [original-size]="true"
         [fit-to-page]="true"
         [zoom]="zoom()"
-        (error)="onError()"></pdf-viewer>
+        (error)="onError($event)"></pdf-viewer>
 
       <div class="controls">
         <button class="btn-control" (click)="zoomIn()">
