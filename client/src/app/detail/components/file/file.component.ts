@@ -105,12 +105,18 @@ export class FileComponent {
     }
     if (this.printFrame == null) {
       this.printFrame = document.createElement('iframe');
-      this.printFrame.style.display = 'none';
+      this.printFrame.style.position = 'absolute';
+      this.printFrame.style.top = '-1000';
     }
 
     this.printFrame.src = url;
-    document.body.appendChild(this.printFrame);
-    this.printFrame.contentWindow!.print();
+    this.printFrame = document.body.appendChild(this.printFrame);
+    window.setTimeout(() => {
+      this.printFrame?.contentWindow?.print();
+      window.setTimeout(() => {
+        document.body.removeChild(this.printFrame!);
+      }, 500);
+    }, 200);
   }
 
   protected next() {
