@@ -36,6 +36,7 @@ export interface ArticleStateModel {
   numberNotFound: boolean;
   bomArticle?: Article;
   bomFileIndex?: number;
+  defaultFileNotFound: boolean;
 }
 
 @State<ArticleStateModel>({
@@ -46,6 +47,7 @@ export interface ArticleStateModel {
     article: null,
     currentFile: null,
     numberNotFound: true,
+    defaultFileNotFound: false,
     bomLoading: false,
   },
 })
@@ -94,6 +96,11 @@ export class ArticleState implements NgxsOnInit {
   @Selector()
   static getBomFileIndex(state: ArticleStateModel) {
     return state.bomFileIndex ?? 0;
+  }
+
+  @Selector()
+  static getDefaultFileNotFound(state: ArticleStateModel) {
+    return state.defaultFileNotFound;
   }
 
   private setArticleNumber(
@@ -190,7 +197,7 @@ export class ArticleState implements NgxsOnInit {
     const encodedPath = encodeURIComponent(file.path);
     const fullPath = `/api/article/${article}/file/${encodedPath}`;
     const url = URL.parse(fullPath, window.location.origin);
-    ctx.patchState({ currentFile: url });
+    ctx.patchState({ currentFile: url, defaultFileNotFound: false });
   }
 
   @Action(LoadDefaultFile)
@@ -202,7 +209,7 @@ export class ArticleState implements NgxsOnInit {
       tap(x => {
         ctx.patchState({
           bomArticle: x,
-          numberNotFound: false,
+          defaultFileNotFound: false,
           bomFileIndex: 0,
         });
         if (x.files && x.files.length > 0) {
@@ -211,8 +218,9 @@ export class ArticleState implements NgxsOnInit {
           );
         }
       }),
-      catchError(() => {
-        ctx.patchState({ numberNotFound: true, bomFileIndex: undefined });
+      catchError(err => {
+        console.log(err);
+        ctx.patchState({ defaultFileNotFound: true, bomFileIndex: undefined });
         return of(null);
       })
     );

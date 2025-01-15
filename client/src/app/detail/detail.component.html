@@ -51,10 +51,15 @@
         </button>
       </div>
     }
-    <app-file
-      [fileUrl]="currentFile()"
-      [fileCount]="currentTab() === Tab.Bom ? fileCount() : 0"
-      [fileIndex]="fileIndex()"
-      (nextFile)="nextFile()"></app-file>
+    @if (defaultFileNotFound()) {
+      <h3 class="err-txt">Datei wurde nicht gefunden</h3>
+      <img class="err-img" src="no-result.svg" alt="Datei nicht gefunden" />
+    } @else {
+      <app-file
+        [fileUrl]="currentFile()"
+        [fileCount]="currentTab() === Tab.Bom ? fileCount() : 0"
+        [fileIndex]="fileIndex()"
+        (nextFile)="nextFile()"></app-file>
+    }
   </div>
 }

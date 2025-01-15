@@ -63,6 +63,9 @@ export class DetailComponent {
   protected mobileMode = this.store.selectSignal(ConfigState.isMobileMode);
   protected article = this.store.selectSignal(ArticleState.getArticle);
   protected articleNumber = this.store.selectSignal(ArticleState.getNumber);
+  protected defaultFileNotFound = this.store.selectSignal(
+    ArticleState.getDefaultFileNotFound
+  );
   protected articleNumberNotFound = this.store.selectSignal(
     ArticleState.getArticleNotFound
   );
