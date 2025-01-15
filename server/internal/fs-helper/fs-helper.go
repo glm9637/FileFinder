@@ -111,7 +111,7 @@ func GetDefaultFile(config config.AppConfig, article string, path string, validP
 	return "", false
 }
 
-func GetUploadFolder(config config.AppConfig, article string) (string, error) {
+func GetUploadFolder(config config.AppConfig, article string) string {
 	uploadFolder := config.UploadFolder
 	if uploadFolder == "" {
 		uploadFolder = "img"
@@ -119,15 +119,13 @@ func GetUploadFolder(config config.AppConfig, article string) (string, error) {
 	if config.UploadToArticleFolder == "1" {
 		uploadFolder = filepath.Join(uploadFolder, article)
 	}
-	err := os.MkdirAll(uploadFolder, os.ModePerm)
-	if err != nil {
-		return "", err
-	}
-	return uploadFolder, nil
+
+	return uploadFolder
 }
 
 func GetUploadPath(config config.AppConfig, article string, filename string, count int) (string, error) {
-	uploadFolder, err := GetUploadFolder(config, article)
+	uploadFolder := GetUploadFolder(config, article)
+	err := os.MkdirAll(uploadFolder, os.ModePerm)
 	if err != nil {
 		return "", err
 	}

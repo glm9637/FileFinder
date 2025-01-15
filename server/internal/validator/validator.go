@@ -27,7 +27,7 @@ func IsPDFFile(file fs.DirEntry) bool {
 		return false
 	}
 	extension := strings.ToLower(filepath.Ext(file.Name()))
-	return extension[1:] == "pdf"
+	return strings.ToLower(extension[1:]) == "pdf"
 }
 func IsAllowedDir(config config.AppConfig, file fs.DirEntry) bool {
 	if !file.IsDir() {

@@ -16,10 +16,7 @@ func GetArticle(config config.AppConfig, number string) (gen.Article, error) {
 	}
 	files, hasData := fshelper.AnalyseDirectory(config, number, path)
 
-	uploadPath, err := fshelper.GetUploadFolder(config, number)
-	if err != nil {
-		return gen.Article{}, fmt.Errorf("no article with number %v found", number)
-	}
+	uploadPath := fshelper.GetUploadFolder(config, number)
 
 	uploadFiles, hasUploadData := fshelper.AnalyseDirectory(config, number, uploadPath)
 
