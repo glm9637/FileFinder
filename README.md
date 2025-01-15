@@ -8,6 +8,14 @@ Zuerst die Zip Datei des aktuellsten Releases herunterladen und extrahieren.
 Anschließend die Konfigurationsparameter ind der .env Datei nach belieben anpassen.
 Anwendung dateisuche.exe ausführen
 
+# Client Konfiguration
+
+Das Script "setup.sh" aus dem client-setup Ordner auf den Rasperry pi kopieren und wie folgt ausführen
+
+"bash setup.sh http://[HOSTNAME]:[PORT]"
+
+Dabei Hostname durch den Hostnamen vom Server und Port durch den Port des servers ersetzen. Nach einem Neustart wird nun automatisch Die Anwendung gestartet
+
 # Konfigurationsparameter
 
 Die folgenden Parameter können in der .env Dateien konfiguriert werden

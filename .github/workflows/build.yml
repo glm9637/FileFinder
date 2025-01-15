@@ -26,8 +26,6 @@ jobs:
         run: |
           bash build.sh
           zip -r -q build.zip build
-      - name: Copy the client setup
-        run: cp -r ./client-setup build/client-setup
       - name: Get commit message for the tag
         id: commit_message
         run: |
@@ -37,8 +35,7 @@ jobs:
         id: create_release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build.zip"
-          artifactContentType: "application/zip"
+          artifacts: "build.zip,client-setup/setup.sh"
           body: ${{ env.commit_message }}
         env:
           GITHUB_TOKEN: ${{ secrets.CREATE_RELEASE_PAT }}
