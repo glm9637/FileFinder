@@ -26,11 +26,16 @@ export interface TreeItem<T> {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TreeComponent<T> {
+  private clickedItem: {
+    item: T;
+    timeout: number;
+  } | null = null;
   readonly items = input.required<TreeItem<T>[]>();
   readonly itemList = computed(() => {
     return this.toList(this.items(), this.outputOnNonNode());
   });
   readonly itemSelected = output<T>();
+  readonly itemDoubleClicked = output<T>();
   readonly selected = signal<TreeItem<T> | null>(null);
   readonly outputOnNonNode = input<boolean>(false);
   readonly selectFirst = input<boolean>(true);
@@ -101,9 +106,23 @@ export class TreeComponent<T> {
   }
 
   protected itemClicked(item: TreeItem<T>): void {
+    if (this.clickedItem != null) {
+      if (this.clickedItem.item === item.item) {
+        this.itemDoubleClicked.emit(item.item);
+      } else {
+        window.clearTimeout(this.clickedItem.timeout);
+      }
+    } else {
+      this.clickedItem = {
+        item: item.item,
+        timeout: window.setTimeout(() => {
+          this.clickedItem = null;
+        }, 300),
+      };
+    }
+
     if (item.children == null || this.outputOnNonNode()) {
       this.selected.set(item);
-
       this.itemSelected.emit(item.item);
     }
   }

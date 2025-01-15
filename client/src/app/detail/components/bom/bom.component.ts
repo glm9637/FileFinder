@@ -77,4 +77,9 @@ export class BomComponent {
   protected itemSelected(item: Bom) {
     this.bomSelected.emit(item);
   }
+
+  protected itemDoubleClicked(item: Bom) {
+    window.open(`${window.location.hostname}/#/${item.number}`, '_blank');
+    console.log(item);
+  }
 }
