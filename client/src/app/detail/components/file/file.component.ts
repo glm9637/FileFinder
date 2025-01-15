@@ -49,6 +49,17 @@ export class FileComponent {
     this.hasError.set(false);
   });
   private http = inject(HttpClient);
+  protected readonly filename = computed(() => {
+    const url = this.fileUrl();
+    if (url == null) {
+      return 'file';
+    }
+    const parts = decodeURIComponent(url.pathname).split('/');
+    if (parts == null) {
+      return 'file';
+    }
+    return parts[parts.length - 1];
+  });
   protected readonly fileType = computed(() => {
     const parts = this.fileUrl()?.pathname.split('.');
     if (parts == null || parts?.length === 1) {

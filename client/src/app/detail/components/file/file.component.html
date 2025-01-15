@@ -10,6 +10,11 @@
         <button (click)="print()">
           <img src="icons/printer.svg" alt="Print" />
         </button>
+        <button>
+          <a [href]="url" [download]="filename()">
+            <img src="icons/download-simple.svg" alt="download"
+          /></a>
+        </button>
       </div>
     }
     @case ('pdf') {
@@ -26,6 +31,11 @@
       <div class="controls">
         <button (click)="print()">
           <img src="icons/printer.svg" alt="Print" />
+        </button>
+        <button>
+          <a [href]="url" [download]="filename()">
+            <img src="icons/download-simple.svg" alt="download"
+          /></a>
         </button>
         <button (click)="next()" [ngClass]="{ disabled: !hasNextFile() }">
           <img src="icons/files.svg" alt="Next File" />
