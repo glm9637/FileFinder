@@ -1,11 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, input, output } from '@angular/core';
-import {
-  FormBuilder,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-article-input',
@@ -30,14 +26,33 @@ export class ArticleInputComponent {
     this.searchForm.enable();
   });
 
-  public searchForm = new FormBuilder().nonNullable.control(
-    '',
-    Validators.pattern(/^\d{7}$/)
-  );
+  public searchForm = new FormBuilder().nonNullable.control('');
+
+  private formatInput = this.searchForm.valueChanges
+    .pipe(takeUntilDestroyed())
+    .subscribe(value => {
+      value = value.replace(/ /g, '');
+      if (value.length > 7) {
+        value = value.substring(0, 7);
+      }
+      let finalValue = '';
+
+      for (let i = 0; i < value.length; i++) {
+        if (i === 1 || i === 3 || i === 5) {
+          finalValue += ' ';
+        }
+        finalValue += value[i];
+      }
+      this.searchForm.setValue(finalValue, { emitEvent: false });
+    });
   public search = output<string>();
 
   public handleSearch() {
-    this.search.emit(this.searchForm.value ?? '');
+    this.search.emit(this.removeWhitespace(this.searchForm.value ?? ''));
+  }
+
+  private removeWhitespace(value: string): string {
+    return value.replace(/ /g, '');
   }
 
   public reset() {

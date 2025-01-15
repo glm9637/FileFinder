@@ -1,18 +1,24 @@
 :host {
   height: 100lvh;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+}
+
+.sidebar {
+  width: 33vw;
+  min-width: 25rem;
+  height: 100%;
 }
 
 .body {
   display: flex;
   height: calc(100% - 64px);
+  width: 100%;
 }
 
 .tree {
   background-color: var(--secondary);
-  width: 60rem;
-  max-width: 50vw;
+  width: 100%;
   display: flex;
   flex-direction: column;
 }

@@ -6,6 +6,11 @@
   @switch (fileType()) {
     @case ('image') {
       <img class="file-image" src="{{ url }}" alt="Datei" />
+      <div class="controls">
+        <button (click)="print()">
+          <img src="icons/printer.svg" alt="Print" />
+        </button>
+      </div>
     }
     @case ('pdf') {
       <pdf-viewer
@@ -19,10 +24,21 @@
         (error)="onError($event)"></pdf-viewer>
 
       <div class="controls">
-        <button class="btn-control" (click)="zoomIn()">
+        <button (click)="print()">
+          <img src="icons/printer.svg" alt="Print" />
+        </button>
+        <button (click)="next()" [ngClass]="{ disabled: !hasNextFile() }">
+          <img src="icons/file-arrow-down.svg" alt="Next File" />
+        </button>
+        <div class="dots">
+          @for (dot of fileDots(); track $index) {
+            <div class="div" [ngClass]="{ active: dot, dot: true }"></div>
+          }
+        </div>
+        <button (click)="zoomIn()">
           <img src="icons/zoom-in.svg" alt="Zoom in" />
         </button>
-        <button class="btn-control" (click)="zoomOut()">
+        <button (click)="zoomOut()">
           <img src="icons/zoom-out.svg" alt="Zoom out" />
         </button>
       </div>

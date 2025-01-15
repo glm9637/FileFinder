@@ -1,0 +1,17 @@
+.notify {
+  position: absolute;
+  bottom: -64px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  transition: bottom 0.4s ease-in-out;
+  background-color: var(--primary);
+  color: white;
+  font-size: 1.1rem;
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.show {
+  bottom: 16px;
+}

@@ -1,4 +1,11 @@
-import { Component, computed, input, output, ViewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  input,
+  output,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { FileSystem } from '../../../api/models/file-system';
 import { TreeComponent, TreeItem } from '../../../core/tree/tree.component';
 import { Bom } from '../../../api/models/bom';
@@ -15,6 +22,7 @@ export class FilesComponent {
   readonly selectFirst = input<boolean>(true);
 
   public fileSelected = output<FileSystem>();
+  public initialSelection = signal<FileSystem | null>(null);
 
   protected treeData = computed(() => {
     const current = this.files();
@@ -34,15 +42,24 @@ export class FilesComponent {
 
   private mapToTreeItem(
     item: FileSystem,
-    expanded = true
+    expanded = true,
+    preSelect = false
   ): TreeItem<FileSystem> {
     return {
       label: `${item.name ?? ''}`,
       item: item,
       expanded,
+      initialSelection: preSelect && item.name?.includes('pdf'),
       children:
-        item.children?.map(c => this.mapToTreeItem(c)).filter(x => x != null) ??
-        null,
+        item.children
+          ?.map(c =>
+            this.mapToTreeItem(
+              c,
+              true,
+              item.name === 'PDU' && c.name?.includes('pdf')
+            )
+          )
+          .filter(x => x != null) ?? null,
     };
   }
 

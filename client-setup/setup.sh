@@ -1,11 +1,14 @@
 #!/bin/bash
 HOSTNAME=$1
 
-sudo echo "@lxpanel --profile LXDE-pi" > /etc/xdg/lxsession/LXDE-pi/autostart
-sudo echo "@pcmanfm --desktop --profile LXDE-pi" >> /etc/xdg/lxsession/LXDE-pi/autostart
-sudo echo "@xscreensaver -no-splash" >> /etc/xdg/lxsession/LXDE-pi/autostart
+AUTOSTART_FILE="~/.config/autostart/filefinder.desktop"
 
-sudo echo "@xset s off" >> /etc/xdg/lxsession/LXDE-pi/autostart
-sudo echo "@xset -dpms" >> /etc/xdg/lxsession/LXDE-pi/autostart
-sudo echo "@xset s noblank" >> /etc/xdg/lxsession/LXDE-pi/autostart
-sudo echo "@chromium-browser --kiosk $HOSTNAME" >> /etc/xdg/lxsession/LXDE-pi/autostart	
+mkdir -p ~/.config/autostart
+touch $AUTOSTART_FILE
+
+echo "[Desktop Entry]" > $AUTOSTART_FILE
+echo "Name=FileFinder" >> $AUTOSTART_FILE
+echo "Type=Application" >> $AUTOSTART_FILE
+echo "Exec=chromium-browser --kiosk $HOSTNAME" >> $AUTOSTART_FILE
+echo "Terminal=false" >> $AUTOSTART_FILE
+

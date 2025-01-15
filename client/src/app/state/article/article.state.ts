@@ -15,7 +15,9 @@ import {
   LoadDefaultFile,
   LoadFile,
   LoadFiles,
+  LoadNextFile,
   SetNumber,
+  SetPageTitle,
 } from './article.actions';
 import { ScannerService } from '../../core/scanner/scanner.service';
 import { catchError, map, of, tap } from 'rxjs';
@@ -32,6 +34,8 @@ export interface ArticleStateModel {
   article: Article | null;
   currentFile: URL | null;
   numberNotFound: boolean;
+  bomArticle?: Article;
+  bomFileIndex?: number;
 }
 
 @State<ArticleStateModel>({
@@ -82,6 +86,16 @@ export class ArticleState implements NgxsOnInit {
     return state.numberNotFound;
   }
 
+  @Selector()
+  static getBomFileCount(state: ArticleStateModel) {
+    return state.bomArticle?.files?.length ?? 0;
+  }
+
+  @Selector()
+  static getBomFileIndex(state: ArticleStateModel) {
+    return state.bomFileIndex ?? 0;
+  }
+
   private setArticleNumber(
     ctx: StateContext<ArticleStateModel>,
     article: string
@@ -101,9 +115,22 @@ export class ArticleState implements NgxsOnInit {
         if (articleNumber == null) {
           return;
         }
-        ctx.dispatch([new LoadBom(), new LoadFiles()]);
+        ctx.dispatch([new LoadBom(), new LoadFiles(), new SetPageTitle()]);
       })
     );
+  }
+
+  @Action(SetPageTitle)
+  setPageTitle(ctx: StateContext<ArticleStateModel>) {
+    let current = document.title;
+    if (current.includes('-')) {
+      current = current.split('-')[0].trimEnd();
+    }
+    const number = ctx.getState().number;
+    if (number != null) {
+      current = `${current} - ${number}`;
+    }
+    document.title = current;
   }
 
   @Action(ConnectScanner)
@@ -117,6 +144,9 @@ export class ArticleState implements NgxsOnInit {
 
   @Action(SetNumber)
   setNumber(ctx: StateContext<ArticleStateModel>, { number }: SetNumber) {
+    if (number.length !== 7) {
+      throw new Error('Invalid article number');
+    }
     this.setArticleNumber(ctx, number);
   }
 
@@ -168,9 +198,44 @@ export class ArticleState implements NgxsOnInit {
     ctx: StateContext<ArticleStateModel>,
     { articleNumber }: LoadDefaultFile
   ) {
-    const fullPath = `/api/article/${articleNumber}/file`;
-    const url = URL.parse(fullPath, window.location.origin);
-    console.log(url);
-    ctx.patchState({ currentFile: url });
+    return this.apiService.getArticleFiles({ number: articleNumber }).pipe(
+      tap(x => {
+        ctx.patchState({
+          bomArticle: x,
+          numberNotFound: false,
+          bomFileIndex: 0,
+        });
+        if (x.files && x.files.length > 0) {
+          ctx.dispatch(
+            new LoadFile({ file: x.files[0], article: articleNumber })
+          );
+        }
+      }),
+      catchError(() => {
+        ctx.patchState({ numberNotFound: true, bomFileIndex: undefined });
+        return of(null);
+      })
+    );
+  }
+
+  @Action(LoadNextFile)
+  loadNextFile(ctx: StateContext<ArticleStateModel>) {
+    const state = ctx.getState();
+    if (
+      state.bomArticle == null ||
+      state.bomArticle.files == null ||
+      state.bomArticle.files.length === 0
+    ) {
+      return;
+    }
+    const index = state.bomFileIndex ?? -1;
+    const nextIndex = (index + 1) % state.bomArticle.files.length;
+    ctx.patchState({ bomFileIndex: nextIndex });
+    ctx.dispatch(
+      new LoadFile({
+        file: state.bomArticle.files![nextIndex],
+        article: state.bomArticle.number!,
+      })
+    );
   }
 }

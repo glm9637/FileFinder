@@ -59,7 +59,7 @@ type FileSystemType string
 
 // UploadFileMultipartBody defines parameters for UploadFile.
 type UploadFileMultipartBody struct {
-	Photo *openapi_types.File `json:"photo,omitempty"`
+	Attachments *[]openapi_types.File `json:"attachments,omitempty"`
 }
 
 // UploadFileMultipartRequestBody defines body for UploadFile for multipart/form-data ContentType.
@@ -73,9 +73,9 @@ type ServerInterface interface {
 	// get a bom of the article
 	// (GET /article/{number}/bom)
 	GetBom(w http.ResponseWriter, r *http.Request, number string)
-	// get the default file for the article
+	// get the default files for the article
 	// (GET /article/{number}/file)
-	GetArticleFile(w http.ResponseWriter, r *http.Request, number string)
+	GetArticleFiles(w http.ResponseWriter, r *http.Request, number string)
 	// uploads a new file to the specified article
 	// (POST /article/{number}/file)
 	UploadFile(w http.ResponseWriter, r *http.Request, number string)
@@ -143,8 +143,8 @@ func (siw *ServerInterfaceWrapper) GetBom(w http.ResponseWriter, r *http.Request
 	handler.ServeHTTP(w, r)
 }
 
-// GetArticleFile operation middleware
-func (siw *ServerInterfaceWrapper) GetArticleFile(w http.ResponseWriter, r *http.Request) {
+// GetArticleFiles operation middleware
+func (siw *ServerInterfaceWrapper) GetArticleFiles(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -158,7 +158,7 @@ func (siw *ServerInterfaceWrapper) GetArticleFile(w http.ResponseWriter, r *http
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetArticleFile(w, r, number)
+		siw.Handler.GetArticleFiles(w, r, number)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -349,7 +349,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 
 	m.HandleFunc("GET "+options.BaseURL+"/article/{number}", wrapper.GetArticle)
 	m.HandleFunc("GET "+options.BaseURL+"/article/{number}/bom", wrapper.GetBom)
-	m.HandleFunc("GET "+options.BaseURL+"/article/{number}/file", wrapper.GetArticleFile)
+	m.HandleFunc("GET "+options.BaseURL+"/article/{number}/file", wrapper.GetArticleFiles)
 	m.HandleFunc("POST "+options.BaseURL+"/article/{number}/file", wrapper.UploadFile)
 	m.HandleFunc("GET "+options.BaseURL+"/article/{number}/file/{path}", wrapper.GetFile)
 

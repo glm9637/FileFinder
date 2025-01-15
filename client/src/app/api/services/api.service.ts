@@ -15,8 +15,8 @@ import { Article } from '../models/article';
 import { Bom } from '../models/bom';
 import { getArticle } from '../fn/operations/get-article';
 import { GetArticle$Params } from '../fn/operations/get-article';
-import { getArticleFile } from '../fn/operations/get-article-file';
-import { GetArticleFile$Params } from '../fn/operations/get-article-file';
+import { getArticleFiles } from '../fn/operations/get-article-files';
+import { GetArticleFiles$Params } from '../fn/operations/get-article-files';
 import { getBom } from '../fn/operations/get-bom';
 import { GetBom$Params } from '../fn/operations/get-bom';
 import { getFile } from '../fn/operations/get-file';
@@ -96,36 +96,36 @@ export class ApiService extends BaseService {
     );
   }
 
-  /** Path part for operation `getArticleFile()` */
-  static readonly GetArticleFilePath = '/article/{number}/file';
+  /** Path part for operation `getArticleFiles()` */
+  static readonly GetArticleFilesPath = '/article/{number}/file';
 
   /**
-   * get the default file for the article.
+   * get the default files for the article.
    *
    *
    *
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getArticleFile()` instead.
+   * To access only the response body, use `getArticleFiles()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getArticleFile$Response(params: GetArticleFile$Params, context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
-    return getArticleFile(this.http, this.rootUrl, params, context);
+  getArticleFiles$Response(params: GetArticleFiles$Params, context?: HttpContext): Observable<StrictHttpResponse<Article>> {
+    return getArticleFiles(this.http, this.rootUrl, params, context);
   }
 
   /**
-   * get the default file for the article.
+   * get the default files for the article.
    *
    *
    *
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getArticleFile$Response()` instead.
+   * To access the full response (for headers, for example), `getArticleFiles$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getArticleFile(params: GetArticleFile$Params, context?: HttpContext): Observable<Blob> {
-    return this.getArticleFile$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Blob>): Blob => r.body)
+  getArticleFiles(params: GetArticleFiles$Params, context?: HttpContext): Observable<Article> {
+    return this.getArticleFiles$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Article>): Article => r.body)
     );
   }
 

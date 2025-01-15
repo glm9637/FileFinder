@@ -1,4 +1,5 @@
 <app-tree
   [items]="treeData()"
   (itemSelected)="treeItemSelected($event)"
-  [selectFirst]="selectFirst()"></app-tree>
+  [selectFirst]="selectFirst()"
+  (initialSelect)="initialSelection()"></app-tree>

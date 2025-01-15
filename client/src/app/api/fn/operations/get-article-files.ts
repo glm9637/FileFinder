@@ -8,25 +8,26 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { Article } from '../../models/article';
 
-export interface GetArticleFile$Params {
+export interface GetArticleFiles$Params {
   number: string;
 }
 
-export function getArticleFile(http: HttpClient, rootUrl: string, params: GetArticleFile$Params, context?: HttpContext): Observable<StrictHttpResponse<Blob>> {
-  const rb = new RequestBuilder(rootUrl, getArticleFile.PATH, 'get');
+export function getArticleFiles(http: HttpClient, rootUrl: string, params: GetArticleFiles$Params, context?: HttpContext): Observable<StrictHttpResponse<Article>> {
+  const rb = new RequestBuilder(rootUrl, getArticleFiles.PATH, 'get');
   if (params) {
     rb.path('number', params.number, {});
   }
 
   return http.request(
-    rb.build({ responseType: 'blob', accept: 'application/pdf', context })
+    rb.build({ responseType: 'json', accept: 'application/json', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Blob>;
+      return r as StrictHttpResponse<Article>;
     })
   );
 }
 
-getArticleFile.PATH = '/article/{number}/file';
+getArticleFiles.PATH = '/article/{number}/file';

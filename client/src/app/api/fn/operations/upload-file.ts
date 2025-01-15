@@ -16,7 +16,7 @@ export interface UploadFile$Params {
  */
   number: string;
       body?: {
-'photo'?: Blob;
+'attachments'?: Array<Blob>;
 }
 }
 

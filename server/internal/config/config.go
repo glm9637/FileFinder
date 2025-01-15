@@ -9,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+const APP_NAME = "APP_NAME"
 const PATH_ENV = "ROOT_PATH"
 const FILES_ENV = "ALLOWED_FILES"
 const FOLDERS_ENV = "ALLOWED_FOLDERS"
@@ -24,6 +25,7 @@ type Config struct {
 type ServerConfig struct {
 	Hostname string
 	Port     string
+	AppName  string
 }
 
 type AppConfig struct {
@@ -37,6 +39,7 @@ type AppConfig struct {
 
 func (c *Config) Print() {
 	log.Printf("Dateisuche erreichbar unter 'http://%s:%s'\n", c.Server.Hostname, c.Server.Port)
+	log.Printf("Anwendung wird mit dem Titel '%s' ausgeführt", c.Server.AppName)
 	log.Printf("Dateien werden in dem Pfad '%s' gesucht\n", c.App.Path)
 	log.Printf("Es werden Dateien mit den endungen '%s' gesucht\n", c.App.Files)
 	log.Printf("Es werden Dateien in den Unterordnern '%s' gesucht\n", c.App.Folders)
@@ -63,10 +66,15 @@ func GetConfig() (Config, error) {
 	if stlFolder == "" {
 		stlFolder = filepath.Join("STAMM", "STL")
 	}
+	appName := os.Getenv(APP_NAME)
+	if appName == "" {
+		appName = "Dateisuche"
+	}
 	return Config{
 		Server: ServerConfig{
 			Hostname: hostname,
 			Port:     os.Getenv(PORT_ENV),
+			AppName:  appName,
 		},
 		App: AppConfig{
 			Path:                  os.Getenv(PATH_ENV),

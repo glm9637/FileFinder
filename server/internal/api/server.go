@@ -2,6 +2,8 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -22,37 +24,17 @@ type Server struct {
 }
 
 // GetArticleFile implements gen.ServerInterface.
-func (s Server) GetArticleFile(w http.ResponseWriter, r *http.Request, number string) {
-	filePath, err := article.GetDefaultFilePath(s.config.App, number)
+func (s Server) GetArticleFiles(w http.ResponseWriter, r *http.Request, number string) {
+	response, err := article.GetDefaultArticleFiles(s.config.App, number)
 	if err != nil {
 		log.Println(err.Error())
-		writeNotFound(w, r)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	file, err := os.ReadFile(filePath)
-	if err != nil {
-		writeNotFound(w, r)
-		return
-	}
-	w.Header().Add("Cache-Control", "no-cache")
-	w.Write(file)
 
-}
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(response)
 
-func writeNotFound(w http.ResponseWriter, _ *http.Request) {
-	w.WriteHeader(http.StatusNotFound)
-	w.Write([]byte(`
-	<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <img src="../../../no-result.svg" alt="No Result" style="width:40rem; margin: 8rem" />
-  </body>
-</html>`))
 }
 
 // GetArticle implements ServerInterface.
@@ -105,27 +87,69 @@ func (s Server) UploadFile(w http.ResponseWriter, r *http.Request, number string
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	file, fileHeader, err := r.FormFile("photo")
+	chunk := make([]byte, 4096)
+	hasError := false
+	count := 1
+	fmt.Println(r.MultipartForm)
+	rd, err := r.MultipartReader()
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
 		log.Printf("%v", err)
-		return
-	}
-
-	path, err := fshelper.GetUploadFolder(s.config.App, number, fileHeader.Filename)
-
-	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Printf("%v", err)
 		return
 	}
-	err = fshelper.UploadFile(path, file)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Printf("%v", err)
-		return
-	}
+	for {
+		part, err := rd.NextPart()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			hasError = true
+			log.Printf("%v", err)
+			break
+		}
 
+		destinationPath, err := fshelper.GetUploadPath(s.config.App, number, part.FileName(), count)
+		if err != nil {
+			hasError = true
+			log.Printf("%v", err)
+			continue
+		}
+		count++
+		destination, err := os.Create(destinationPath)
+		if err != nil {
+			hasError = true
+			log.Printf("%v", err)
+			continue
+		}
+
+		defer destination.Close()
+
+		var uploaded bool
+		for !uploaded {
+			var n int
+			if n, err = part.Read(chunk); err != nil {
+				if err != io.EOF {
+					log.Printf("Hit error while reading chunk: %s", err.Error())
+					w.WriteHeader(500)
+					fmt.Fprintf(w, "Error occured during upload")
+					return
+				}
+				uploaded = true
+			}
+
+			if _, err = destination.Write(chunk[:n]); err != nil {
+				log.Printf("Hit error while writing chunk: %s", err.Error())
+				w.WriteHeader(500)
+				fmt.Fprintf(w, "Error occured during upload")
+				return
+			}
+		}
+
+	}
+	if hasError {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusNoContent)
 }
 

@@ -2,7 +2,6 @@ package validator
 
 import (
 	"io/fs"
-	"log"
 	"path/filepath"
 	"regexp"
 	"slices"
@@ -20,15 +19,20 @@ func IsAllowedFile(config config.AppConfig, file fs.DirEntry) bool {
 		return false
 	}
 	extension := strings.ToLower(filepath.Ext(file.Name()))
-	log.Printf("%v is allowed: %v", extension[1:], slices.Contains(config.Files, extension[:1]))
 	return slices.Contains(config.Files, extension[1:])
 }
 
+func IsPDFFile(file fs.DirEntry) bool {
+	if file.IsDir() {
+		return false
+	}
+	extension := strings.ToLower(filepath.Ext(file.Name()))
+	return extension[1:] == "pdf"
+}
 func IsAllowedDir(config config.AppConfig, file fs.DirEntry) bool {
 	if !file.IsDir() {
 		return false
 	}
 
-	log.Printf("%v is allowed: %v", file, slices.Contains(config.Folders, file.Name()))
 	return slices.Contains(config.Folders, file.Name())
 }

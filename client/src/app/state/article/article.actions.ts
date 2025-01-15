@@ -30,3 +30,11 @@ export class LoadDefaultFile {
   static readonly type = '[Article] LoadDefault';
   constructor(readonly articleNumber: string) {}
 }
+
+export class SetPageTitle {
+  static readonly type = '[Article] SetPageTitle';
+}
+
+export class LoadNextFile {
+  static readonly type = '[Article] LoadNextFile';
+}

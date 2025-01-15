@@ -24,11 +24,15 @@ import { ArticleState } from '../state/article/article.state';
 import {
   LoadDefaultFile,
   LoadFile,
+  LoadFiles,
+  LoadNextFile,
   SetNumber,
 } from '../state/article/article.actions';
 import { Bom } from '../api/models/bom';
 import { Router } from '@angular/router';
 import { ApiService } from '../api/services';
+import { NotifyService } from '../core/notify/notify.service';
+import { catchError, of, tap } from 'rxjs';
 
 @Component({
   selector: 'app-detail',
@@ -51,6 +55,8 @@ export class DetailComponent {
     }
     return this.showContentOnMobile();
   });
+
+  private notificationService = inject(NotifyService);
   private apiService = inject(ApiService);
   private store = inject(Store);
   protected scannerMode = this.store.selectSignal(ConfigState.isScannerMode);
@@ -65,6 +71,13 @@ export class DetailComponent {
   protected Tab = Tab;
   protected currentTab = signal(Tab.Folder);
   protected currentFile = this.store.selectSignal(ArticleState.getCurrentFile);
+
+  protected readonly fileCount = this.store.selectSignal(
+    ArticleState.getBomFileCount
+  );
+  protected readonly fileIndex = this.store.selectSignal(
+    ArticleState.getBomFileIndex
+  );
 
   private router = inject(Router);
   private readonly scannerCommand = toSignal(inject(ScannerService).event$);
@@ -113,6 +126,10 @@ export class DetailComponent {
     this.showContentOnMobile.set(false);
   }
 
+  protected nextFile() {
+    this.store.dispatch(new LoadNextFile());
+  }
+
   protected async uploadFile(event: Event) {
     const element = event.target as HTMLInputElement | null;
     const files = element?.files;
@@ -120,15 +137,25 @@ export class DetailComponent {
     if (files == null || files.length == 0 || articleNumber == null) {
       return;
     }
-    const file = files[0];
 
     this.apiService
       .uploadFile({
         number: articleNumber,
         body: {
-          photo: file,
+          attachments: Array.from(files),
         },
       })
-      .subscribe();
+      .pipe(
+        tap(() => {
+          this.notificationService.success('Hochladen erfolgreich');
+        }),
+        catchError(() => {
+          this.notificationService.error('Fehler beim Hochladen');
+          return of(null);
+        })
+      )
+      .subscribe(() => {
+        this.store.dispatch(new LoadFiles());
+      });
   }
 }

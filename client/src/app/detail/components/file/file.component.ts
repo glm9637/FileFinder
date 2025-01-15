@@ -4,6 +4,7 @@ import {
   effect,
   inject,
   input,
+  output,
   signal,
 } from '@angular/core';
 import { FileSystem } from '../../../api/models/file-system';
@@ -26,6 +27,23 @@ export type FileType = 'pdf' | 'image' | 'text' | 'other';
 })
 export class FileComponent {
   public readonly fileUrl = input<URL | null>();
+  public readonly fileCount = input<number>(0);
+  public readonly fileIndex = input<number>(0);
+  protected readonly fileDots = computed(() => {
+    const fileCount = this.fileCount();
+    const fileIndex = this.fileIndex();
+    if (fileCount < 2) {
+      return [];
+    }
+    const result = new Array(fileCount).fill(false);
+    result[fileIndex] = true;
+    return result;
+  });
+  protected readonly hasNextFile = computed(() => {
+    return this.fileCount() > 1;
+  });
+  public readonly nextFile = output<void>();
+  private printFrame: HTMLIFrameElement | null = null;
   private readonly fileUrlSet = effect(() => {
     const _ = this.fileUrl(); // eslint-disable-line @typescript-eslint/no-unused-vars
     this.hasError.set(false);
@@ -57,7 +75,7 @@ export class FileComponent {
     switchMap(url => this.http.get(url.href, { responseType: 'text' }))
   );
 
-  protected readonly zoom = signal(1);
+  protected readonly zoom = signal(1.1);
   protected readonly url = computed(() => {
     const url = this.fileUrl();
     if (url == null) {
@@ -73,10 +91,32 @@ export class FileComponent {
   }
 
   protected zoomIn() {
-    this.zoom.update(zoom => zoom + 0.3);
+    this.zoom.update(zoom => zoom + 0.05);
   }
 
   protected zoomOut() {
-    this.zoom.update(zoom => zoom - 0.3);
+    this.zoom.update(zoom => zoom - 0.05);
+  }
+
+  protected print() {
+    const url = this.url();
+    if (url == null) {
+      return;
+    }
+    if (this.printFrame == null) {
+      this.printFrame = document.createElement('iframe');
+      this.printFrame.style.display = 'none';
+    }
+
+    this.printFrame.src = url;
+    document.body.appendChild(this.printFrame);
+    this.printFrame.contentWindow!.print();
+  }
+
+  protected next() {
+    if (!this.hasNextFile()) {
+      return;
+    }
+    this.nextFile.emit();
   }
 }

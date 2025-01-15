@@ -15,6 +15,7 @@ export interface TreeItem<T> {
   children: TreeItem<T>[] | null;
   expanded: boolean;
   display?: boolean;
+  initialSelection?: boolean;
 }
 
 @Component({
@@ -40,6 +41,10 @@ export class TreeComponent<T> {
     }
     if (this.selectFirst()) {
       this.itemClicked(itemList[0]);
+    }
+    const preSelected = itemList.find(x => x.initialSelection);
+    if (preSelected) {
+      this.itemClicked(preSelected);
     }
     itemList[0].expanded = true;
   });

@@ -3,10 +3,11 @@ import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ConfigState } from './core/config/config.state';
 import { Store } from '@ngxs/store';
+import { NotifyComponent } from './core/notify/notify.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule],
+  imports: [RouterOutlet, CommonModule, NotifyComponent],
   templateUrl: './app.component.html',
 })
 export class AppComponent {
