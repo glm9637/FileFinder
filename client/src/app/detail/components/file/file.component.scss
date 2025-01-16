@@ -2,6 +2,7 @@
   width: 100%;
   height: 100%;
   padding: 8px;
+  position: relative;
 }
 
 .file {
@@ -26,7 +27,8 @@
 }
 
 .text {
-  padding: 1rem;
+  padding: 1rem 5rem;
+  white-space: pre-line;
 }
 
 .controls {
@@ -38,9 +40,9 @@
   width: 56px;
   background-color: #212121;
   border-radius: 4px;
-  position: relative;
-  left: 0rem;
-  top: -99vh;
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
 
   button {
     height: 48px;

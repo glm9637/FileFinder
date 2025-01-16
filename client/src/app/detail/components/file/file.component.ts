@@ -65,7 +65,7 @@ export class FileComponent {
     if (parts == null || parts?.length === 1) {
       return 'pdf';
     }
-    const extension = parts.pop()!;
+    const extension = parts.pop()!.toLowerCase();
     if (['pdf'].includes(extension)) {
       return extension;
     }
@@ -124,9 +124,6 @@ export class FileComponent {
     this.printFrame = document.body.appendChild(this.printFrame);
     window.setTimeout(() => {
       this.printFrame?.contentWindow?.print();
-      window.setTimeout(() => {
-        document.body.removeChild(this.printFrame!);
-      }, 500);
     }, 200);
   }
 

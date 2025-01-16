@@ -6,16 +6,6 @@
   @switch (fileType()) {
     @case ('image') {
       <img class="file-image" src="{{ url }}" alt="Datei" />
-      <div class="controls">
-        <button (click)="print()">
-          <img src="icons/printer.svg" alt="Print" />
-        </button>
-        <button>
-          <a [href]="url" [download]="filename()">
-            <img src="icons/download-simple.svg" alt="download"
-          /></a>
-        </button>
-      </div>
     }
     @case ('pdf') {
       <pdf-viewer
@@ -27,34 +17,9 @@
         [fit-to-page]="true"
         [zoom]="zoom()"
         (error)="onError($event)"></pdf-viewer>
-
-      <div class="controls">
-        <button (click)="print()">
-          <img src="icons/printer.svg" alt="Print" />
-        </button>
-        <button>
-          <a [href]="url" [download]="filename()">
-            <img src="icons/download-simple.svg" alt="download"
-          /></a>
-        </button>
-        <button (click)="next()" [ngClass]="{ disabled: !hasNextFile() }">
-          <img src="icons/files.svg" alt="Next File" />
-        </button>
-        <div class="dots">
-          @for (dot of fileDots(); track $index) {
-            <div class="div" [ngClass]="{ active: dot, dot: true }"></div>
-          }
-        </div>
-        <button (click)="zoomIn()">
-          <img src="icons/zoom-in.svg" alt="Zoom in" />
-        </button>
-        <button (click)="zoomOut()">
-          <img src="icons/zoom-out.svg" alt="Zoom out" />
-        </button>
-      </div>
     }
     @case ('text') {
-      <div class="text">{{ textContent$ | async }}</div>
+      <p class="text">{{ textContent$ | async }}</p>
     }
     @default {
       <h3 class="err-txt">Dateityp wird nicht unterstützt</h3>
@@ -64,4 +29,30 @@
         alt="DatePsiityp wird nicht unterstützt" />
     }
   }
+  <div class="controls">
+    <button (click)="print()">
+      <img src="icons/printer.svg" alt="Print" />
+    </button>
+    <button>
+      <a [href]="url" [download]="filename()">
+        <img src="icons/download-simple.svg" alt="download"
+      /></a>
+    </button>
+    @if (fileType() === 'pdf') {
+      <button (click)="next()" [ngClass]="{ disabled: !hasNextFile() }">
+        <img src="icons/files.svg" alt="Next File" />
+      </button>
+      <div class="dots">
+        @for (dot of fileDots(); track $index) {
+          <div class="div" [ngClass]="{ active: dot, dot: true }"></div>
+        }
+      </div>
+      <button (click)="zoomIn()">
+        <img src="icons/zoom-in.svg" alt="Zoom in" />
+      </button>
+      <button (click)="zoomOut()">
+        <img src="icons/zoom-out.svg" alt="Zoom out" />
+      </button>
+    }
+  </div>
 }
