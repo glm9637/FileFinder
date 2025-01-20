@@ -80,6 +80,5 @@ export class BomComponent {
 
   protected itemDoubleClicked(item: Bom) {
     window.open(`/#/${item.number}`, '_blank');
-    console.log(item);
   }
 }

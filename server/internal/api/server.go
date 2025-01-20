@@ -90,7 +90,6 @@ func (s Server) UploadFile(w http.ResponseWriter, r *http.Request, number string
 	chunk := make([]byte, 4096)
 	hasError := false
 	count := 1
-	fmt.Println(r.MultipartForm)
 	rd, err := r.MultipartReader()
 	if err != nil {
 		log.Printf("%v", err)

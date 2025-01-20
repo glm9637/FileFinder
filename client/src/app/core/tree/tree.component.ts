@@ -45,11 +45,11 @@ export class TreeComponent<T> {
       return;
     }
     if (this.selectFirst()) {
-      this.itemClicked(itemList[0]);
+      this.itemClicked(itemList[0], false);
     }
     const preSelected = itemList.find(x => x.initialSelection);
     if (preSelected) {
-      this.itemClicked(preSelected);
+      this.itemClicked(preSelected, false);
     }
     itemList[0].expanded = true;
   });
@@ -105,20 +105,22 @@ export class TreeComponent<T> {
     ];
   }
 
-  protected itemClicked(item: TreeItem<T>): void {
-    if (this.clickedItem != null) {
-      if (this.clickedItem.item === item.item) {
-        this.itemDoubleClicked.emit(item.item);
+  protected itemClicked(item: TreeItem<T>, canDoubleClick = true): void {
+    if (canDoubleClick) {
+      if (this.clickedItem != null) {
+        if (this.clickedItem.item === item.item) {
+          this.itemDoubleClicked.emit(item.item);
+        } else {
+          window.clearTimeout(this.clickedItem.timeout);
+        }
       } else {
-        window.clearTimeout(this.clickedItem.timeout);
+        this.clickedItem = {
+          item: item.item,
+          timeout: window.setTimeout(() => {
+            this.clickedItem = null;
+          }, 300),
+        };
       }
-    } else {
-      this.clickedItem = {
-        item: item.item,
-        timeout: window.setTimeout(() => {
-          this.clickedItem = null;
-        }, 300),
-      };
     }
 
     if (item.children == null || this.outputOnNonNode()) {
