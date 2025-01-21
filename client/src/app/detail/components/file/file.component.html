@@ -29,7 +29,7 @@
         alt="DatePsiityp wird nicht unterstützt" />
     }
   }
-  <div class="controls">
+  <div class="controls" [ngClass]="{ mobile: mobileMode() }">
     <button (click)="print()">
       <img src="icons/printer.svg" alt="Print" />
     </button>
@@ -39,13 +39,15 @@
       /></a>
     </button>
     @if (fileType() === 'pdf') {
-      <button (click)="next()" [ngClass]="{ disabled: !hasNextFile() }">
-        <img src="icons/files.svg" alt="Next File" />
-      </button>
-      <div class="dots">
-        @for (dot of fileDots(); track $index) {
-          <div class="div" [ngClass]="{ active: dot, dot: true }"></div>
-        }
+      <div class="switch-files">
+        <button (click)="next()" [ngClass]="{ disabled: !hasNextFile() }">
+          <img src="icons/files.svg" alt="Next File" />
+        </button>
+        <div class="dots">
+          @for (dot of fileDots(); track $index) {
+            <div class="div" [ngClass]="{ active: dot, dot: true }"></div>
+          }
+        </div>
       </div>
       <button (click)="zoomIn()">
         <img src="icons/zoom-in.svg" alt="Zoom in" />

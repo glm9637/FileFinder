@@ -59,6 +59,7 @@
         [fileUrl]="currentFile()"
         [fileCount]="currentTab() === Tab.Bom ? fileCount() : 0"
         [fileIndex]="fileIndex()"
+        [mobileMode]="mobileMode()"
         (nextFile)="nextFile()"></app-file>
     }
   </div>

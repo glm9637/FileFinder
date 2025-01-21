@@ -48,6 +48,7 @@ import { catchError, of, tap } from 'rxjs';
 })
 export class DetailComponent {
   @ViewChild(FilesComponent) filesComponent: FilesComponent | undefined;
+  private ignoreFileSelected = true;
   private showContentOnMobile = signal(false);
   protected showContent = computed(() => {
     if (!this.mobileMode()) {
@@ -102,16 +103,23 @@ export class DetailComponent {
 
   public handleSearch(article: string): void {
     this.store.dispatch(new SetNumber(article));
+
+    this.ignoreFileSelected = true;
   }
 
   protected setTab(tab: Tab): void {
     this.currentTab.set(tab);
+    this.ignoreFileSelected = true;
   }
 
   protected fileSelected(file: FileSystem) {
     this.store.dispatch(
       new LoadFile({ file: file, article: this.article()!.number! })
     );
+    if (this.ignoreFileSelected) {
+      this.ignoreFileSelected = false;
+      return;
+    }
     this.showContentOnMobile.set(true);
   }
 

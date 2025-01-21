@@ -29,6 +29,7 @@ export class FileComponent {
   public readonly fileUrl = input<URL | null>();
   public readonly fileCount = input<number>(0);
   public readonly fileIndex = input<number>(0);
+  public readonly mobileMode = input(false);
   protected readonly fileDots = computed(() => {
     const fileCount = this.fileCount();
     const fileIndex = this.fileIndex();

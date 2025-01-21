@@ -196,7 +196,11 @@ export class ArticleState implements NgxsOnInit {
     }
     const encodedPath = encodeURIComponent(file.path);
     const fullPath = `/api/article/${article}/file/${encodedPath}`;
-    const url = URL.parse(fullPath, window.location.origin);
+    if ('parse' in URL) {
+      const url = URL.parse(fullPath, window.location.origin);
+      ctx.patchState({ currentFile: url, defaultFileNotFound: false });
+    }
+    const url = new URL(fullPath, window.location.origin);
     ctx.patchState({ currentFile: url, defaultFileNotFound: false });
   }
 

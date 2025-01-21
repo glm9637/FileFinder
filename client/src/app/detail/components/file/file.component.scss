@@ -37,15 +37,27 @@
   align-items: center;
   flex-direction: column;
   padding: 4px;
-  width: 56px;
+  width: 3rem;
   background-color: #212121;
   border-radius: 4px;
   position: absolute;
   left: 1rem;
   top: 1rem;
 
+  &.mobile {
+    top: -4rem;
+    width: auto;
+    flex-direction: row;
+  }
+
   button {
-    height: 48px;
+    height: 3rem;
+    width: 3rem;
+  }
+
+  .files {
+    height: 3rem;
+    width: 3rem;
   }
 
   .disabled {
