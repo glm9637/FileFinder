@@ -26,7 +26,8 @@ export type FileType = 'pdf' | 'image' | 'text' | 'other';
   styleUrl: './file.component.scss',
 })
 export class FileComponent {
-  public readonly fileUrl = input<URL | null>();
+  private errorDelayTimeout: number | null = null;
+  public readonly fileUrl = input.required<URL | null>();
   public readonly fileCount = input<number>(0);
   public readonly fileIndex = input<number>(0);
   public readonly mobileMode = input(false);
@@ -87,7 +88,7 @@ export class FileComponent {
     switchMap(url => this.http.get(url.href, { responseType: 'text' }))
   );
 
-  protected readonly zoom = signal(1.1);
+  protected readonly zoom = signal(1);
   protected readonly url = computed(() => {
     const url = this.fileUrl();
     if (url == null) {
@@ -97,9 +98,18 @@ export class FileComponent {
   });
 
   public readonly hasError = signal(false);
-  public onError(event: unknown) {
-    console.error(event);
-    this.hasError.set(true);
+  public onError() {
+    this.errorDelayTimeout = window.setTimeout(() => {
+      this.hasError.set(true);
+      this.errorDelayTimeout = null;
+    }, 500);
+  }
+
+  public onLoadComplete() {
+    if (this.errorDelayTimeout != null) {
+      window.clearTimeout(this.errorDelayTimeout);
+    }
+    this.hasError.set(false);
   }
 
   protected zoomIn() {

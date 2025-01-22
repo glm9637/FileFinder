@@ -15,8 +15,10 @@
         [autoresize]="true"
         [original-size]="true"
         [fit-to-page]="true"
+        [zoom-scale]="'page-fit'"
         [zoom]="zoom()"
-        (error)="onError($event)"></pdf-viewer>
+        (after-load-complete)="onLoadComplete()"
+        (error)="onError()"></pdf-viewer>
     }
     @case ('text') {
       <p class="text">{{ textContent$ | async }}</p>
