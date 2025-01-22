@@ -16,6 +16,16 @@ Das Script "setup.sh" aus dem client-setup Ordner auf den Rasperry pi kopieren u
 
 Dabei Hostname durch den Hostnamen vom Server und Port durch den Port des servers ersetzen. Nach einem Neustart wird nun automatisch Die Anwendung gestartet
 
+# Scanner
+
+Um den Scanner Modus zu benutzen muss der Scanner mit Enter als Ende Signal konfiguriert sein. Wenn das erfüllt ist, können Barcodes mit den folgenden Befehlen gescannt und verarbeitet werden.
+| Befehl | Beschreibung |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| NEXT | Zeigt die nächste Datei an |
+| PREV | Zeigt die vorherige Datei an |
+| CLOSE | Schließt den aktuellen Artikel und kehrt zum Startbildschirm zurück |
+| (7 Zahlen) | Öffnet den entsprechenden Artikel |
+
 # Konfigurationsparameter
 
 Die folgenden Parameter können in der .env Dateien konfiguriert werden
