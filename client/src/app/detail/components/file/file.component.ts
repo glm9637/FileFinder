@@ -13,6 +13,7 @@ import { HttpClient } from '@angular/common/http';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, switchMap } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { ScrollStateDirective } from './scroll-state.directive';
 export interface ArticleFile {
   article: string;
   file: FileSystem;
@@ -21,7 +22,7 @@ export interface ArticleFile {
 export type FileType = 'pdf' | 'image' | 'text' | 'other';
 @Component({
   selector: 'app-file',
-  imports: [PdfViewerModule, CommonModule],
+  imports: [PdfViewerModule, CommonModule, ScrollStateDirective],
   templateUrl: './file.component.html',
   styleUrl: './file.component.scss',
 })
@@ -113,11 +114,15 @@ export class FileComponent {
   }
 
   protected zoomIn() {
-    this.zoom.update(zoom => zoom + 0.05);
+    this.zoom.update(zoom => zoom + 0.15);
   }
 
   protected zoomOut() {
-    this.zoom.update(zoom => zoom - 0.05);
+    this.zoom.update(zoom => zoom - 0.15);
+  }
+
+  protected zoomReset() {
+    this.zoom.update(() => 1);
   }
 
   protected print() {

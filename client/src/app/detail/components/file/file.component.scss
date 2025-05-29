@@ -44,6 +44,10 @@
   left: 1rem;
   top: 1rem;
 
+  img {
+    margin: auto;
+  }
+
   &.mobile {
     top: -4rem;
     width: auto;
@@ -82,4 +86,82 @@
 
 .dot.active {
   background: var(--primary);
+}
+[scrollState] {
+  // This is your wrapper element, e.g., <div scrollState class="scrollBox">
+  position: relative; // Crucial for positioning pseudo-elements absolutely within it
+  // z-index: 0; // Optional: Establishes a base stacking context if needed, usually not required here.
+
+  // Define shadow visual properties
+  $shadow-strip-height: 20px; // How tall the area for the shadow gradient will be
+  $shadow-color-value: #484747; // Your base shadow color
+  $shadow-opacity-strong: 0.6; // Opacity for the strongest part of the shadow
+  $shadow-opacity-medium: 0.3; // Opacity for the mid part of the shadow
+  $shadow-opacity-faint: 0.1; // Opacity for the faintest part
+
+  // Or, if you prefer a simpler, solid shadow that fades:
+  // $shadow-color-base: rgba(0, 0, 0, 0.15); // Example: A semi-transparent black
+
+  // Pseudo-elements for the shadows
+  &::before, // Top shadow
+  &::after {
+    // Bottom shadow
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: $shadow-strip-height;
+    z-index: 10; // Ensure shadows are on top of the PDF viewer content
+    pointer-events: none; // Allows clicks/interaction to pass through to the PDF viewer
+    opacity: 0; // Initially hidden
+    transition: opacity 125ms ease-in-out; // Matches your directive's transition timing
+  }
+
+  // Top shadow pseudo-element styling
+  &::before {
+    top: 0;
+    // Creates a gradient that fades downwards, simulating an inner top shadow
+    background: linear-gradient(
+      to bottom,
+      rgba($shadow-color-value, $shadow-opacity-strong) 0%,
+      rgba($shadow-color-value, $shadow-opacity-medium) 40%,
+      rgba($shadow-color-value, $shadow-opacity-faint) 70%,
+      transparent 100%
+    );
+    // Alternative simpler gradient:
+    // background: linear-gradient(to bottom, $shadow-color-base, transparent);
+  }
+
+  // Bottom shadow pseudo-element styling
+  &::after {
+    bottom: 0;
+    // Creates a gradient that fades upwards, simulating an inner bottom shadow
+    background: linear-gradient(
+      to top,
+      rgba($shadow-color-value, $shadow-opacity-strong) 0%,
+      rgba($shadow-color-value, $shadow-opacity-medium) 40%,
+      rgba($shadow-color-value, $shadow-opacity-faint) 70%,
+      transparent 100%
+    );
+    // Alternative simpler gradient:
+    // background: linear-gradient(to top, $shadow-color-base, transparent);
+  }
+
+  // Control the opacity of pseudo-elements based on the classes from your directive
+  &.can-scroll-up {
+    &::before {
+      opacity: 1; // Show top shadow
+    }
+  }
+
+  &.can-scroll-down {
+    &::after {
+      opacity: 1; // Show bottom shadow
+    }
+  }
+
+  // Your combined class logic (e.g., &.can-scroll-up.can-scroll-down)
+  // is naturally handled because if both classes are present, both opacities will be set to 1.
+  // If only one class is present, only that corresponding shadow will have opacity: 1.
+  // If no classes are present, both remain opacity: 0 (hidden).
 }

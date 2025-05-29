@@ -31,9 +31,8 @@ export class ScannerService {
       this.currentInput = '';
     }
     if (/^[0-9a-zA-z]$/.test(event.key)) {
-      this.currentInput += event.key;
-      if (this.currentInput.length > 7) {
-        this.currentInput = this.currentInput.substring(1);
+      if (this.currentInput.length < 7) {
+        this.currentInput += event.key;
       }
     }
   };

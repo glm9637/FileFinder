@@ -9,6 +9,7 @@
     }
     @case ('pdf') {
       <pdf-viewer
+        scrollState
         class="file"
         [src]="url"
         [render-text]="true"
@@ -16,6 +17,7 @@
         [original-size]="true"
         [fit-to-page]="true"
         [zoom-scale]="'page-fit'"
+        [show-borders]="true"
         [zoom]="zoom()"
         (after-load-complete)="onLoadComplete()"
         (error)="onError()"></pdf-viewer>
@@ -56,6 +58,9 @@
       </button>
       <button (click)="zoomOut()">
         <img src="icons/zoom-out.svg" alt="Zoom out" />
+      </button>
+      <button (click)="zoomReset()">
+        <img src="icons/zoom-reset.svg" alt="Zoom in" />
       </button>
     }
   </div>

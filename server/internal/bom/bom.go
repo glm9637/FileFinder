@@ -77,7 +77,11 @@ func getBomRecursive(config config.AppConfig, current entry, knownArticles *safe
 	}
 
 	if bom, exists := knownArticles.Load(current.Number); exists {
-		return bom, nil
+		return gen.Bom{
+			Index:  &current.Index,
+			Number: bom.Number,
+			Name:   bom.Name,
+		}, nil
 	}
 
 	children, err := getEntry(config, current.Number)
